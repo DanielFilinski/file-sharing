@@ -27,7 +27,14 @@ import {
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
 
-export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => void, isGridView: boolean, setIsGridView: (v: boolean) => void }> = ({ selectedCount, onAddItem, isGridView, setIsGridView }) => {
+export const Toolbar: React.FC<{
+  selectedCount: number,
+  onAddItem: (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => void,
+  isGridView: boolean,
+  setIsGridView: (v: boolean) => void,
+  documentFilter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent',
+  onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent') => void
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -177,15 +184,15 @@ export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'docum
               shape="rounded"
               className={styles.menuButton}
             >
-              All Documents
+              {documentFilter}
             </MenuButton>
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
-              <MenuItem>All Documents</MenuItem>
-              <MenuItem>My Documents</MenuItem>
-              <MenuItem>Shared Documents</MenuItem>
-              <MenuItem>Recent</MenuItem>
+              <MenuItem onClick={() => onFilterChange('All Documents')}>All Documents</MenuItem>
+              <MenuItem onClick={() => onFilterChange('My Documents')}>My Documents</MenuItem>
+              <MenuItem onClick={() => onFilterChange('Shared Documents')}>Shared Documents</MenuItem>
+              <MenuItem onClick={() => onFilterChange('Recent')}>Recent</MenuItem>
             </MenuList>
           </MenuPopover>
         </Menu>
