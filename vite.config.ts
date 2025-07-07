@@ -1,17 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import fs from "fs";
+import path from 'path';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+  plugins: [react(), tsconfigPaths()],
   define: {
     global: "globalThis",
   },
   server: {
     port: 53000,
-    https: {
-      cert: process.env.SSL_CRT_FILE ? fs.readFileSync(process.env.SSL_CRT_FILE) : undefined,
-      key: process.env.SSL_KEY_FILE ? fs.readFileSync(process.env.SSL_KEY_FILE) : undefined,
-    },
   },
 });
