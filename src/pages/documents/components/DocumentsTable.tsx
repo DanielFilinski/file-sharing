@@ -18,38 +18,10 @@ const TABLE_COLUMNS = [
   { key: 'name', name: 'Name' },
   { key: 'modified', name: 'Modified' },
   { key: 'createdBy', name: 'Created by' },
-  { key: 'modifiedBy', name: 'Modified by' }
-];
-
-const TABLE_ITEMS = [
-  { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe' },
-  { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson' },
-  { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis' },
-  { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark' },
-  { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '8', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '9', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '10', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '11', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '12', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '13', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '14', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '15', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '16', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '17', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '18', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '19', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '20', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '21', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '22', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '23', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '24', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '25', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-  // { key: '26', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
-];
-
+  { key: 'modifiedBy', name: 'Modified by' },
+  { key: 'favorite', name: 'Favorite' },
+  { key: 'status', name: 'Status' }
+];  
 
 
 export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void, isGridView: boolean }> = ({ items, selectedItems, setSelectedItems, isGridView }) => {
@@ -133,7 +105,7 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
               </TableHeaderCell>
             ))}
             <TableHeaderCell style={{ width: '50px' }}>
-              <Text weight="semibold">★</Text>
+              <Text weight="semibold"></Text>
             </TableHeaderCell>
           </TableRow>
         </TableHeader>
@@ -167,6 +139,9 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
                   onClick={(e) => handleFavoriteClick(e, item.key)}
                   style={{ minWidth: 'auto', padding: '4px' }}
                 />
+              </TableCell>
+              <TableCell>
+                <Text>{item.status}</Text>
               </TableCell>
             </TableRow>
           ))}
