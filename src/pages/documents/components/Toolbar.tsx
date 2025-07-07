@@ -20,7 +20,7 @@ import {
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
 
-export const Toolbar: React.FC<{ selectedCount: number }> = ({ selectedCount }) => {
+export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => void }> = ({ selectedCount, onAddItem }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -99,10 +99,10 @@ export const Toolbar: React.FC<{ selectedCount: number }> = ({ selectedCount }) 
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
-              <MenuItem onClick={() => { console.log('Document') }}>Document</MenuItem>
-              <MenuItem onClick={() => { console.log('Spreadsheet') }}>Spreadsheet</MenuItem>
-              <MenuItem onClick={() => { console.log('Presentation') }}>Presentation</MenuItem>
-              <MenuItem onClick={() => { console.log('Form') }}>Form</MenuItem>
+              <MenuItem onClick={() => onAddItem('document')}>Document</MenuItem>
+              <MenuItem onClick={() => onAddItem('spreadsheet')}>Spreadsheet</MenuItem>
+              <MenuItem onClick={() => onAddItem('presentation')}>Presentation</MenuItem>
+              <MenuItem onClick={() => onAddItem('form')}>Form</MenuItem>
             </MenuList>
           </MenuPopover>
         </Menu>

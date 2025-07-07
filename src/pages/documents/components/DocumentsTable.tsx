@@ -50,12 +50,12 @@ const TABLE_ITEMS = [
 
 
 
-export const DocumentsTable: React.FC<{ selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void }> = ({ selectedItems, setSelectedItems }) => {
+export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void }> = ({ items, selectedItems, setSelectedItems }) => {
   const styles = useStyles();
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItems(new Set(TABLE_ITEMS.map(item => item.key)));
+      setSelectedItems(new Set(items.map(item => item.key)));
     } else {
       setSelectedItems(new Set());
     }
@@ -71,8 +71,8 @@ export const DocumentsTable: React.FC<{ selectedItems: Set<string>, setSelectedI
     setSelectedItems(newSelected);
   };
 
-  const isAllSelected = selectedItems.size === TABLE_ITEMS.length;
-  const isIndeterminate = selectedItems.size > 0 && selectedItems.size < TABLE_ITEMS.length;
+  const isAllSelected = selectedItems.size === items.length;
+  const isIndeterminate = selectedItems.size > 0 && selectedItems.size < items.length;
 
   return (
     <div style={{position: 'relative', height: '100%'}}>
@@ -104,7 +104,7 @@ export const DocumentsTable: React.FC<{ selectedItems: Set<string>, setSelectedI
           </TableRow>
         </TableHeader>
         <TableBody>
-          {TABLE_ITEMS.map(item => (
+          {items.map(item => (
             <TableRow key={item.key}>
               <TableCell>
                 <div className={styles.cellContent}>
