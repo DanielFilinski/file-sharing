@@ -1,1 +1,1 @@
- 
+export * from './model/useDocumentApproval'; 

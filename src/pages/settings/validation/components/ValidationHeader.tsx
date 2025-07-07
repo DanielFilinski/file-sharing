@@ -1,4 +1,5 @@
-import { SettingsHeader } from '@/components/SettingsHeader'; 
+
+import { SettingsHeader } from '../../../../components/SettingsHeader';
 import { SaveIcon, ShieldIcon } from '../icons';
 
 interface ValidationHeaderProps {
