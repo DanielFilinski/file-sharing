@@ -1,1 +1,3 @@
-export * from './SettingsHeader'; 
+import { SettingsHeader } from './SettingsHeader';
+
+export { SettingsHeader };
