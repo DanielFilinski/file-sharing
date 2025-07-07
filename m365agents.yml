@@ -141,7 +141,7 @@ deploy:
     name: deploy to Azure Static Web Apps
     with:
       args: '--yes @azure/static-web-apps-cli deploy ./dist -d
-        ${{SECRET_TAB_SWA_DEPLOYMENT_TOKEN}} --env production'
+        ${{SECRET_TAB_SWA_DEPLOYMENT_TOKEN}} --env production --api-location ./api'
   # Run npm command
   - uses: cli/runNpmCommand
     name: install dependencies
