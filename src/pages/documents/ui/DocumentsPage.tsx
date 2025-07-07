@@ -69,6 +69,19 @@ export default function DocumentsPage() {
     setSelectedItems(new Set());
   };
 
+  const handleUploadFiles = (files: FileList) => {
+    const newDocs = Array.from(files).map(file => ({
+      key: (Math.random() * 100000).toFixed(0),
+      name: file.name,
+      modified: 'just now',
+      createdBy: 'You',
+      modifiedBy: 'You',
+      owner: 'me',
+      shared: false
+    }));
+    setDocuments(prev => [...prev, ...newDocs]);
+  };
+
   let filteredDocuments = documents;
   if (documentFilter === 'My Documents') filteredDocuments = documents.filter(d => d.owner === 'me');
   if (documentFilter === 'Shared Documents') filteredDocuments = documents.filter(d => d.shared);
@@ -77,7 +90,7 @@ export default function DocumentsPage() {
   return (
     <div className={styles.root}>
       <div className={styles.content}>
-        <Toolbar selectedCount={selectedItems.size} onAddItem={handleAddItem} isGridView={isGridView} setIsGridView={setIsGridView} documentFilter={documentFilter} onFilterChange={handleFilterChange} />
+        <Toolbar selectedCount={selectedItems.size} onAddItem={handleAddItem} isGridView={isGridView} setIsGridView={setIsGridView} documentFilter={documentFilter} onFilterChange={handleFilterChange} onUploadFiles={handleUploadFiles} />
         <Breadcrumbs /> 
         <DocumentsTable items={filteredDocuments} selectedItems={selectedItems} setSelectedItems={setSelectedItems} isGridView={isGridView} />
       </div>

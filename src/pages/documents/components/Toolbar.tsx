@@ -33,8 +33,9 @@ export const Toolbar: React.FC<{
   isGridView: boolean,
   setIsGridView: (v: boolean) => void,
   documentFilter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent',
-  onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent') => void
-}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange }) => {
+  onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent') => void,
+  onUploadFiles: (files: FileList) => void
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -58,7 +59,9 @@ export const Toolbar: React.FC<{
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    // TODO: логика загрузки файлов
+    if (files && files.length > 0) {
+      onUploadFiles(files);
+    }
   };
 
   const handleOpenCloud = () => setDialogOpen('cloud');
