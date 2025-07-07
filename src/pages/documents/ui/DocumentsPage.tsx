@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Toolbar } from '../components/Toolbar';
@@ -30,13 +30,14 @@ const useStyles = makeStyles({
 
 export default function DocumentsPage() {
   const styles = useStyles();
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
   return (
     <div className={styles.root}>
       <div className={styles.content}>
-        <Toolbar />
+        <Toolbar selectedCount={selectedItems.size} />
         <Breadcrumbs /> 
-        <DocumentsTable />
+        <DocumentsTable selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
       </div>
     </div>
   );

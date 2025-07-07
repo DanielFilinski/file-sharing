@@ -50,9 +50,8 @@ const TABLE_ITEMS = [
 
 
 
-export const DocumentsTable: React.FC = () => {
+export const DocumentsTable: React.FC<{ selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void }> = ({ selectedItems, setSelectedItems }) => {
   const styles = useStyles();
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {

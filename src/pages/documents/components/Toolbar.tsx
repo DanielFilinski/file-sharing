@@ -20,7 +20,7 @@ import {
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
 
-export const Toolbar: React.FC = () => {
+export const Toolbar: React.FC<{ selectedCount: number }> = ({ selectedCount }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -127,7 +127,9 @@ export const Toolbar: React.FC = () => {
       </div>
       
       <div className={styles.toolbarRight}>
-        <Text className={styles.selectedText}>1 selected</Text>
+        <Text className={styles.selectedText}>
+          {selectedCount > 0 ? `${selectedCount} selected` : ''}
+        </Text>
         <Menu>
           <MenuTrigger>
             <MenuButton
