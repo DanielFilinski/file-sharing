@@ -8,9 +8,11 @@ import {
   TableHeaderCell, 
   TableBody, 
   TableCell, 
-  Text 
+  Text,
+  Button
 } from '@fluentui/react-components';
-import { Document20Regular, DocumentBulletList20Regular } from '@fluentui/react-icons';
+import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled } from '@fluentui/react-icons';
+import { useFavorites } from '@/features/favorites';
 
 const TABLE_COLUMNS = [
   { key: 'name', name: 'Name' },
@@ -52,6 +54,7 @@ const TABLE_ITEMS = [
 
 export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void, isGridView: boolean }> = ({ items, selectedItems, setSelectedItems, isGridView }) => {
   const styles = useStyles();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -71,6 +74,11 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
     setSelectedItems(newSelected);
   };
 
+  const handleFavoriteClick = (e: React.MouseEvent, itemKey: string) => {
+    e.stopPropagation();
+    toggleFavorite(itemKey);
+  };
+
   const isAllSelected = selectedItems.size === items.length;
   const isIndeterminate = selectedItems.size > 0 && selectedItems.size < items.length;
 
@@ -79,7 +87,15 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, padding: 16 }}>
         {items.map(item => (
           <div key={item.key} style={{ border: '1px solid #eee', borderRadius: 8, padding: 16, minWidth: 200, maxWidth: 240, background: '#fafafa', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>{item.name}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+              <div style={{ fontWeight: 600, flex: 1 }}>{item.name}</div>
+              <Button
+                appearance="transparent"
+                icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
+                onClick={(e) => handleFavoriteClick(e, item.key)}
+                style={{ minWidth: 'auto', padding: '4px' }}
+              />
+            </div>
             <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Modified: {item.modified}</div>
             <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Created by: {item.createdBy}</div>
             <div style={{ fontSize: 12, color: '#888' }}>Modified by: {item.modifiedBy}</div>
@@ -116,6 +132,9 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
                 <Text weight="semibold">{column.name}</Text>
               </TableHeaderCell>
             ))}
+            <TableHeaderCell style={{ width: '50px' }}>
+              <Text weight="semibold">★</Text>
+            </TableHeaderCell>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -140,6 +159,14 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
               </TableCell>
               <TableCell>
                 <Text>{item.modifiedBy}</Text>
+              </TableCell>
+              <TableCell>
+                <Button
+                  appearance="transparent"
+                  icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
+                  onClick={(e) => handleFavoriteClick(e, item.key)}
+                  style={{ minWidth: 'auto', padding: '4px' }}
+                />
               </TableCell>
             </TableRow>
           ))}

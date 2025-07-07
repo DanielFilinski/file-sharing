@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Toolbar } from '../components/Toolbar';
 import { DocumentsTable } from '../components/DocumentsTable';
+import { useFavorites } from '@/features/favorites';
+import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles({
   root: {
@@ -30,6 +32,8 @@ const useStyles = makeStyles({
 
 export default function DocumentsPage() {
   const styles = useStyles();
+  const location = useLocation();
+  const { getFavorites } = useFavorites();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [documents, setDocuments] = useState([
     { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false },
@@ -41,7 +45,7 @@ export default function DocumentsPage() {
     { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false },
   ]);
   const [isGridView, setIsGridView] = useState(false);
-  const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent'>('All Documents');
+  const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites'>('All Documents');
 
   const handleAddItem = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
     const ext = {
@@ -64,7 +68,7 @@ export default function DocumentsPage() {
     ]);
   };
 
-  const handleFilterChange = (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent') => {
+  const handleFilterChange = (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => {
     setDocumentFilter(filter);
     setSelectedItems(new Set());
   };
@@ -86,6 +90,17 @@ export default function DocumentsPage() {
   if (documentFilter === 'My Documents') filteredDocuments = documents.filter(d => d.owner === 'me');
   if (documentFilter === 'Shared Documents') filteredDocuments = documents.filter(d => d.shared);
   if (documentFilter === 'Recent') filteredDocuments = documents.slice(-3);
+  if (documentFilter === 'Favorites') {
+    const favoriteKeys = getFavorites();
+    filteredDocuments = documents.filter(d => favoriteKeys.includes(d.key));
+  }
+
+  // Если находимся на странице избранного, автоматически устанавливаем фильтр
+  useEffect(() => {
+    if (location.pathname === '/favorites') {
+      setDocumentFilter('Favorites');
+    }
+  }, [location.pathname]);
 
   return (
     <div className={styles.root}>

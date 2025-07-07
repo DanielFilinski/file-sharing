@@ -30,6 +30,10 @@ export const router = createBrowserRouter([
         element: <DmsMainScreen/>,
       },
       {
+        path: 'favorites',
+        element: <DmsMainScreen />,
+      },
+      {
         path: 'settings/organization',
         element: <OrganizationSettings />,
       },

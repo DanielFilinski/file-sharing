@@ -32,8 +32,8 @@ export const Toolbar: React.FC<{
   onAddItem: (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => void,
   isGridView: boolean,
   setIsGridView: (v: boolean) => void,
-  documentFilter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent',
-  onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent') => void,
+  documentFilter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites',
+  onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => void,
   onUploadFiles: (files: FileList) => void
 }> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles }) => {
   const styles = useStyles();
@@ -196,6 +196,7 @@ export const Toolbar: React.FC<{
               <MenuItem onClick={() => onFilterChange('My Documents')}>My Documents</MenuItem>
               <MenuItem onClick={() => onFilterChange('Shared Documents')}>Shared Documents</MenuItem>
               <MenuItem onClick={() => onFilterChange('Recent')}>Recent</MenuItem>
+              <MenuItem onClick={() => onFilterChange('Favorites')}>Favorites</MenuItem>
             </MenuList>
           </MenuPopover>
         </Menu>
