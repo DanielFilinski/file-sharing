@@ -9,8 +9,15 @@ import {
   MenuItem,
   MenuPopover,
   MenuTrigger,
-  Text
+  Text,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogSurface,
+  DialogBody
 } from '@fluentui/react-components';
+import { Button as FluentButton } from '@fluentui/react-components';
 import { 
   AddRegular, 
   ArrowUploadRegular, 
@@ -24,6 +31,8 @@ export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'docum
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal'>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -36,17 +45,47 @@ export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'docum
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const handleUploadFromDevice = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    // TODO: логика загрузки файлов
+  };
+
+  const handleOpenCloud = () => setDialogOpen('cloud');
+  const handleOpenPortal = () => setDialogOpen('portal');
+  const handleCloseDialog = () => setDialogOpen(null);
+
   const renderMainButtons = () => (
     <>
-      <Button
-        icon={<ArrowUploadRegular />}
-        iconPosition="before"
-        appearance="primary"
-        shape="rounded"
-        className={styles.uploadButton}
-      >
-        Upload
-      </Button>
+      <Menu>
+        <MenuTrigger>
+          <MenuButton
+            icon={<ArrowUploadRegular />}
+            appearance="primary"
+            shape="rounded"
+            className={styles.uploadButton}
+          >
+            Upload
+          </MenuButton>
+        </MenuTrigger>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem onClick={handleUploadFromDevice}>From Device</MenuItem>
+            <MenuItem onClick={handleOpenCloud}>From Cloud</MenuItem>
+            <MenuItem onClick={handleOpenPortal}>From Portal</MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        multiple
+        onChange={handleFileChange}
+      />
       <Button
         icon={<Table20Regular />}
         iconPosition="before"
@@ -156,6 +195,23 @@ export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'docum
           className={styles.helpButton}
         />
       </div>
+      {dialogOpen && (
+        <Dialog open onOpenChange={handleCloseDialog}>
+          <DialogSurface>
+            <DialogBody>
+              {/* <DialogTitle>
+                {dialogOpen === 'cloud' ? 'Cloud Upload' : 'Portal Upload'}
+              </DialogTitle> */}
+              <DialogContent>
+                <div style={{ minWidth: 320, minHeight: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ marginBottom: 24 }}>This interface will be available when the server is connected.</span>
+                  <FluentButton appearance="primary" onClick={handleCloseDialog}>Close</FluentButton>
+                </div>
+              </DialogContent>
+            </DialogBody>
+          </DialogSurface>
+        </Dialog>
+      )}
     </div>
   );
 }; 
