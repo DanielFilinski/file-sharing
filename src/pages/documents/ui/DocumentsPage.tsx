@@ -40,6 +40,7 @@ export default function DocumentsPage() {
     { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
     { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
   ]);
+  const [isGridView, setIsGridView] = useState(false);
 
   const handleAddItem = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
     const ext = {
@@ -63,9 +64,9 @@ export default function DocumentsPage() {
   return (
     <div className={styles.root}>
       <div className={styles.content}>
-        <Toolbar selectedCount={selectedItems.size} onAddItem={handleAddItem as (type: string) => void} />
+        <Toolbar selectedCount={selectedItems.size} onAddItem={handleAddItem} isGridView={isGridView} setIsGridView={setIsGridView} />
         <Breadcrumbs /> 
-        <DocumentsTable items={documents} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
+        <DocumentsTable items={documents} selectedItems={selectedItems} setSelectedItems={setSelectedItems} isGridView={isGridView} />
       </div>
     </div>
   );

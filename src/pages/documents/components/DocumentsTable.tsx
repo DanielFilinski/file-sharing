@@ -50,7 +50,7 @@ const TABLE_ITEMS = [
 
 
 
-export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void }> = ({ items, selectedItems, setSelectedItems }) => {
+export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void, isGridView: boolean }> = ({ items, selectedItems, setSelectedItems, isGridView }) => {
   const styles = useStyles();
 
   const handleSelectAll = (checked: boolean) => {
@@ -73,6 +73,21 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
 
   const isAllSelected = selectedItems.size === items.length;
   const isIndeterminate = selectedItems.size > 0 && selectedItems.size < items.length;
+
+  if (isGridView) {
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, padding: 16 }}>
+        {items.map(item => (
+          <div key={item.key} style={{ border: '1px solid #eee', borderRadius: 8, padding: 16, minWidth: 200, maxWidth: 240, background: '#fafafa', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontWeight: 600, marginBottom: 8 }}>{item.name}</div>
+            <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Modified: {item.modified}</div>
+            <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Created by: {item.createdBy}</div>
+            <div style={{ fontSize: 12, color: '#888' }}>Modified by: {item.modifiedBy}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div style={{position: 'relative', height: '100%'}}>

@@ -27,7 +27,7 @@ import {
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
 
-export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => void }> = ({ selectedCount, onAddItem }) => {
+export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => void, isGridView: boolean, setIsGridView: (v: boolean) => void }> = ({ selectedCount, onAddItem, isGridView, setIsGridView }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -91,8 +91,9 @@ export const Toolbar: React.FC<{ selectedCount: number, onAddItem: (type: 'docum
         iconPosition="before"
         appearance="secondary"
         shape="rounded"
+        onClick={() => setIsGridView(!isGridView)}
       >
-        Edit in grid view
+        {isGridView ? 'Table view' : 'Edit in grid view'}
       </Button>
       <Menu>
         <MenuTrigger>
