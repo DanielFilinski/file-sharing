@@ -59,20 +59,20 @@ export const NAV_LINKS: NavLink[] = [
     icon: 'Building'
   },
   {
-    name: 'Storage',
+    name: 'Dashboard',
     url: '#',
     key: 'storage',
     linkName: '/settings/storage',
-    icon: 'Storage',
+    icon: 'Dashboard',
     links: [
       { 
-        name: 'Users', 
+        name: 'Client', 
         url: '#', 
         key: 'users', 
         icon: 'People', 
       },
       { 
-        name: 'Employees', 
+        name: 'Firm User', 
         url: '#', 
         key: 'employees', 
         icon: 'Person' 
@@ -109,7 +109,7 @@ export const NAV_GROUPS: NavGroup[] = [
     title: 'Settings',
     links: [
       NAV_LINKS[3], // Organization
-      NAV_LINKS[4], // Storage
+      NAV_LINKS[4], // Storage => Dashboard
       NAV_LINKS[5], // Validation
       NAV_LINKS[6], // Approval
     ]
