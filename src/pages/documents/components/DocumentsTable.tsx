@@ -29,7 +29,25 @@ const TABLE_COLUMNS = [
 ];  
 
 
-export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void, isGridView: boolean }> = ({ items, selectedItems, setSelectedItems, isGridView }) => {
+export const DocumentsTable: React.FC<{ 
+  items: any[], 
+  selectedItems: Set<string>, 
+  setSelectedItems: (s: Set<string>) => void, 
+  isGridView: boolean,
+  showAccessControl?: boolean,
+  onCloseAccess?: (documentKey: string) => void,
+  showBulkSelection?: boolean,
+  showAdvancedColumns?: boolean
+}> = ({ 
+  items, 
+  selectedItems, 
+  setSelectedItems, 
+  isGridView,
+  showAccessControl = false,
+  onCloseAccess,
+  showBulkSelection = false,
+  showAdvancedColumns = false
+}) => {
   const styles = useStyles();
   const { toggleFavorite, isFavorite } = useFavorites();
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; itemKey: string } | null>(null);
@@ -137,6 +155,21 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
                 <Text weight="semibold">{column.name}</Text>
               </TableHeaderCell>
             ))}
+            {showAccessControl && (
+              <TableHeaderCell>
+                <Text weight="semibold">Access Control</Text>
+              </TableHeaderCell>
+            )}
+            {showAdvancedColumns && (
+              <>
+                <TableHeaderCell>
+                  <Text weight="semibold">Permissions</Text>
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Text weight="semibold">Version</Text>
+                </TableHeaderCell>
+              </>
+            )}
             <TableHeaderCell style={{ width: '50px' }}>
               <Text weight="semibold"></Text>
             </TableHeaderCell>
@@ -180,6 +213,29 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
               <TableCell>
                 <Text>{item.status}</Text>
               </TableCell>
+              {showAccessControl && (
+                <TableCell>
+                  {item.shared && (
+                    <Button
+                      appearance="secondary"
+                      size="small"
+                      onClick={() => onCloseAccess?.(item.key)}
+                    >
+                      Close Access
+                    </Button>
+                  )}
+                </TableCell>
+              )}
+              {showAdvancedColumns && (
+                <>
+                  <TableCell>
+                    <Text>Read/Write</Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text>v1.0</Text>
+                  </TableCell>
+                </>
+              )}
             </TableRow>
           ))}
         </TableBody>
@@ -250,6 +306,16 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
         >
           Print
         </div>
+        {showAccessControl && (
+          <div 
+            style={{ padding: '8px 16px', cursor: 'pointer' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            onClick={() => { onCloseAccess?.(contextMenu.itemKey); handleContextMenuClose(); }}
+          >
+            Close Access
+          </div>
+        )}
       </div>
     )}
     </div>

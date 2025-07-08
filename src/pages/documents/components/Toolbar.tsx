@@ -34,8 +34,10 @@ export const Toolbar: React.FC<{
   setIsGridView: (v: boolean) => void,
   documentFilter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites',
   onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => void,
-  onUploadFiles: (files: FileList) => void
-}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles }) => {
+  onUploadFiles: (files: FileList) => void,
+  showBulkActions?: boolean,
+  showAdvancedFilters?: boolean
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -200,6 +202,12 @@ export const Toolbar: React.FC<{
         <Text className={styles.selectedText}>
           {selectedCount > 0 ? `${selectedCount} selected` : ''}
         </Text>
+        {showBulkActions && selectedCount > 0 && (
+          <div className={styles.bulkActions}>
+            <Button appearance="secondary" size="small">Delete Selected</Button>
+            <Button appearance="secondary" size="small">Share Selected</Button>
+          </div>
+        )}
         <Menu>
           <MenuTrigger>
             <MenuButton
@@ -217,6 +225,13 @@ export const Toolbar: React.FC<{
               <MenuItem onClick={() => onFilterChange('Shared Documents')}>Shared Documents</MenuItem>
               <MenuItem onClick={() => onFilterChange('Recent')}>Recent</MenuItem>
               <MenuItem onClick={() => onFilterChange('Favorites')}>Favorites</MenuItem>
+              {showAdvancedFilters && (
+                <>
+                  <MenuItem onClick={() => onFilterChange('All Documents')}>By Date Range</MenuItem>
+                  <MenuItem onClick={() => onFilterChange('All Documents')}>By File Type</MenuItem>
+                  <MenuItem onClick={() => onFilterChange('All Documents')}>By Status</MenuItem>
+                </>
+              )}
             </MenuList>
           </MenuPopover>
         </Menu>
@@ -334,6 +349,11 @@ const useStyles = makeStyles({
       minWidth: '32px',
       minHeight: '32px',
       padding: 0
+    },
+    bulkActions: {
+      display: 'flex',
+      gap: '8px',
+      alignItems: 'center'
     }
   });
   

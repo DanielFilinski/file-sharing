@@ -8,9 +8,11 @@ import { ToEndUser } from '@/app/pages/ToEndUser';
 import { FromEndUser } from '@/app/pages/FromEndUser';
 import { Users } from '@/app/pages/Users';
 import { Employees } from '@/app/pages/Employees';
-import { Leads } from '@/app/pages/Leads';
+
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Leads } from '@/pages/leads/Leads';
+import FirmSidePage from '@/pages/documents/ui/FirmSidePage';
 
 
 export const router = createBrowserRouter([
@@ -28,7 +30,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'firm-side',
-        element: <DmsMainScreen/>,
+        element: <FirmSidePage/>,
       },
       {
         path: 'favorites',
