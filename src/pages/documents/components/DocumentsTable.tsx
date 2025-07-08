@@ -39,7 +39,8 @@ export const DocumentsTable: React.FC<{
   onToggleLock?: (documentKey: string) => void,
   showBulkSelection?: boolean,
   showAdvancedColumns?: boolean,
-  pageType?: 'firm' | 'client'
+  pageType?: 'firm' | 'client',
+  onRowClick?: (doc: any) => void
 }> = ({ 
   items, 
   selectedItems, 
@@ -50,7 +51,8 @@ export const DocumentsTable: React.FC<{
   onToggleLock,
   showBulkSelection = false,
   showAdvancedColumns = false,
-  pageType = 'firm'
+  pageType = 'firm',
+  onRowClick
 }) => {
   const styles = useStyles();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -139,6 +141,7 @@ export const DocumentsTable: React.FC<{
             key={item.key} 
             style={{ border: '1px solid #eee', borderRadius: 8, padding: 16, minWidth: 200, maxWidth: 240, background: '#fafafa', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', cursor: 'pointer' }}
             onContextMenu={(e) => handleContextMenu(e, item.key)}
+            onClick={() => onRowClick?.(item)}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
               <div style={{ fontWeight: 600, flex: 1 }}>{item.name}</div>
@@ -236,6 +239,7 @@ export const DocumentsTable: React.FC<{
               key={item.key}
               onContextMenu={(e) => handleContextMenu(e, item.key)}
               style={{ cursor: 'pointer' }}
+              onClick={() => onRowClick?.(item)}
             >
               <TableCell>
                 <div className={styles.cellContent}>
