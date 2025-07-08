@@ -8,6 +8,7 @@ import { ToEndUser } from '@/app/pages/ToEndUser';
 import { FromEndUser } from '@/app/pages/FromEndUser';
 import { Users } from '@/app/pages/Users';
 import { Employees } from '@/app/pages/Employees';
+import { Leads } from '@/app/pages/Leads';
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
@@ -64,6 +65,10 @@ export const router = createBrowserRouter([
       {
         path: 'employees',
         element: <Employees />,
+      },
+      {
+        path: 'leads',
+        element: <Leads />,
       },
     ],
   },

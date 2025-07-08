@@ -227,6 +227,7 @@ const Navigation: React.FC<NavigationProps> = ({
     if (path.includes('/from-end-user')) return 'fromenduser';
     if (path.includes('/users')) return 'users';
     if (path.includes('/employees')) return 'employees';
+    if (path.includes('/leads')) return 'leads';
     return 'dms'; // Default
   };
 
@@ -273,6 +274,9 @@ const Navigation: React.FC<NavigationProps> = ({
         break;
       case 'employees':
         navigate('/employees');
+        break;
+      case 'leads':
+        navigate('/leads');
         break;
       default:
         navigate('/');

@@ -92,6 +92,13 @@ export const NAV_LINKS: NavLink[] = [
     key: 'approval',
     linkName: '/settings/approval',
     icon: 'CheckmarkCircle'
+  },
+  {
+    name: 'Leads',
+    url: '#',
+    key: 'leads',
+    linkName: '/leads',
+    icon: 'Leads'
   }
 ];
 
@@ -103,6 +110,7 @@ export const NAV_GROUPS: NavGroup[] = [
       NAV_LINKS[0], // Client Side
       NAV_LINKS[1], // Firm Side
       NAV_LINKS[2], // Favorites
+      NAV_LINKS[7], // Leads
     ]
   },
   {
