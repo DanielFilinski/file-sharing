@@ -130,6 +130,26 @@ export const Toolbar: React.FC<{
       >
         Share
       </Button>
+      <Menu>
+        <MenuTrigger>
+          <MenuButton
+            icon={<MoreHorizontalRegular />}
+            appearance="secondary"
+            shape="rounded"
+          >
+          </MenuButton>
+        </MenuTrigger>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem onClick={() => { console.log('Delete document') }}>Delete</MenuItem>
+            <MenuItem onClick={() => { console.log('Rename document') }}>Rename</MenuItem>
+            <MenuItem onClick={() => { console.log('Move document') }}>Move</MenuItem>
+            <MenuItem onClick={() => { console.log('Copy document') }}>Copy</MenuItem>
+            <MenuItem onClick={() => { console.log('Download document') }}>Download</MenuItem>
+            <MenuItem onClick={() => { console.log('Print document') }}>Print</MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
     </>
   );
 
