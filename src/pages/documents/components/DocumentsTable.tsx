@@ -225,7 +225,7 @@ export const DocumentsTable: React.FC<{
                 </TableHeaderCell>
               </>
             )}
-            <TableHeaderCell style={{ width: '50px' }}>
+            <TableHeaderCell style={{ width: '80px' }}>
               <Text weight="semibold">More</Text>
             </TableHeaderCell>
           </TableRow>
