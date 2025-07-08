@@ -84,7 +84,7 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
                     {msg.sender}
                   </Body2>
                   <Caption1 style={{ 
-                    color: msg.sender === 'You' ? 'rgba(255,255,255,0.8)' : tokens.colorNeutralForeground3
+                    color: tokens.colorNeutralForeground3
                   }}>
                     {msg.timestamp.toLocaleTimeString([], { 
                       hour: '2-digit', 
@@ -136,7 +136,6 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     overflow: 'hidden',
-    // flex: 1,
     flexShrink: 0
   },
   header: {
@@ -153,37 +152,38 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: tokens.spacingVerticalS,
     backgroundColor: tokens.colorNeutralBackground1,
-    minHeight: 0
+    minHeight: 0,
+    maxHeight: '100%'
   },
   messageCard: {
     padding: tokens.spacingHorizontalM,
     maxWidth: '70%',
-    minHeight: '70px',
     borderRadius: tokens.borderRadiusMedium,
     border: 'none',
     boxShadow: tokens.shadow4,
-    width: 'fit-content'
+    wordBreak: 'break-word',
+    marginBottom: tokens.spacingVerticalXS,
+    width: 'auto',
+    flexShrink: 0
   },
   userMessage: {
     alignSelf: 'flex-end',
     backgroundColor: tokens.colorBrandBackground,
     color: tokens.colorNeutralForegroundOnBrand,
     marginLeft: 'auto',
-    marginRight: 0
+    marginRight: 0,
   },
   otherMessage: {
     alignSelf: 'flex-start',
     backgroundColor: tokens.colorNeutralBackground2,
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     marginRight: 'auto',
-    marginLeft: 0
+    marginLeft: 0,
   },
   messageContent: {
     display: 'flex',
     alignItems: 'flex-start',
     gap: tokens.spacingHorizontalS,
-    height: '100%',
-    minHeight: '32px'
   },
   messageHeader: {
     display: 'flex',
