@@ -39,6 +39,7 @@ export interface Document {
   owner: 'me' | 'other';
   shared: boolean;
   status: string;
+  lock: boolean;
 }
 
 export interface BaseDocumentsPageProps {
@@ -67,13 +68,13 @@ export default function BaseDocumentsPage({
   };
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [documents, setDocuments] = useState<Document[]>(initialDocuments.length > 0 ? initialDocuments : [
-    { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active' },
-    { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'Active' },
-    { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'Active' },
-    { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark', owner: 'other', shared: true, status: 'Active' },
-    { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active' },
-    { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'other', shared: true, status: 'Active' },
-    { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active' },
+    { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active', lock: false },
+    { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'Active', lock: false },
+    { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'Active', lock: false },
+    { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark', owner: 'other', shared: true, status: 'Active', lock: false },
+    { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false },
+    { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'other', shared: true, status: 'Active', lock: false },
+    { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false },
   ]);
   const [isGridView, setIsGridView] = useState(false);
   const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites'>('All Documents');
@@ -95,7 +96,8 @@ export default function BaseDocumentsPage({
         modifiedBy: 'You',
         owner: 'me',
         shared: false,
-        status: 'Active'
+        status: 'Active',
+        lock: false
       }
     ]);
   };
@@ -114,7 +116,8 @@ export default function BaseDocumentsPage({
       modifiedBy: 'You',
       owner: 'me' as const,
       shared: false,
-      status: 'Active'
+      status: 'Active',
+      lock: false
     }));
     setDocuments(prev => [...prev, ...newDocs]);
   };
@@ -122,7 +125,15 @@ export default function BaseDocumentsPage({
   const handleCloseAccess = (documentKey: string) => {
     setDocuments(prev => prev.map(doc => 
       doc.key === documentKey 
-        ? { ...doc, shared: false, status: 'Access Closed' }
+        ? { ...doc, shared: false, status: 'Access Closed', lock: false }
+        : doc
+    ));
+  };
+
+  const handleToggleLock = (documentKey: string) => {
+    setDocuments(prev => prev.map(doc => 
+      doc.key === documentKey 
+        ? { ...doc, lock: !doc.lock }
         : doc
     ));
   };
@@ -165,6 +176,7 @@ export default function BaseDocumentsPage({
           isGridView={isGridView}
           showAccessControl={showAccessControl}
           onCloseAccess={handleCloseAccess}
+          onToggleLock={handleToggleLock}
           pageType={getPageType()}
           {...customTableProps}
         />

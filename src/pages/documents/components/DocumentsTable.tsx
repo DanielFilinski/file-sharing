@@ -16,7 +16,7 @@ import {
   MenuPopover,
   MenuTrigger
 } from '@fluentui/react-components';
-import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular } from '@fluentui/react-icons';
+import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular, LockClosed20Regular, LockOpen20Regular } from '@fluentui/react-icons';
 import { useFavorites } from '@/features/favorites';
 
 const TABLE_COLUMNS = [
@@ -36,6 +36,7 @@ export const DocumentsTable: React.FC<{
   isGridView: boolean,
   showAccessControl?: boolean,
   onCloseAccess?: (documentKey: string) => void,
+  onToggleLock?: (documentKey: string) => void,
   showBulkSelection?: boolean,
   showAdvancedColumns?: boolean,
   pageType?: 'firm' | 'client'
@@ -46,6 +47,7 @@ export const DocumentsTable: React.FC<{
   isGridView,
   showAccessControl = false,
   onCloseAccess,
+  onToggleLock,
   showBulkSelection = false,
   showAdvancedColumns = false,
   pageType = 'firm'
@@ -119,6 +121,11 @@ export const DocumentsTable: React.FC<{
   const handleFavoriteClick = (e: React.MouseEvent, itemKey: string) => {
     e.stopPropagation();
     toggleFavorite(itemKey);
+  };
+
+  const handleLockClick = (e: React.MouseEvent, itemKey: string) => {
+    e.stopPropagation();
+    onToggleLock?.(itemKey);
   };
 
   const isAllSelected = selectedItems.size === items.length;
@@ -205,7 +212,7 @@ export const DocumentsTable: React.FC<{
             ))}
             {showAccessControl && (
               <TableHeaderCell>
-                <Text weight="semibold">Access Control</Text>
+                <Text weight="semibold">Lock</Text>
               </TableHeaderCell>
             )}
             {showAdvancedColumns && (
@@ -263,15 +270,20 @@ export const DocumentsTable: React.FC<{
               </TableCell>
               {showAccessControl && (
                 <TableCell>
-                  {item.shared && (
-                    <Button
-                      appearance="secondary"
-                      size="small"
-                      onClick={() => onCloseAccess?.(item.key)}
-                    >
-                      Close Access
-                    </Button>
-                  )}
+                  <Button
+                    appearance="transparent"
+                    icon={item.lock ? (
+                      <LockClosed20Regular 
+                      // style={{ color: tokens.colorPaletteRedBackground3 }} 
+                      />
+                    ) : (
+                      <LockOpen20Regular 
+                      // style={{ color: tokens.colorPaletteGreenBackground3 }} 
+                      />
+                    )}
+                    onClick={(e) => handleLockClick(e, item.key)}
+                    style={{ minWidth: 'auto', padding: '4px' }}
+                  />
                 </TableCell>
               )}
               {showAdvancedColumns && (
