@@ -343,55 +343,21 @@ export const DocumentsTable: React.FC<{
         }}
         onMouseLeave={handleContextMenuClose}
       >
-        <div 
-          style={{ padding: '8px 16px', cursor: 'pointer' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          onClick={() => { console.log('Delete document', contextMenu.itemKey); handleContextMenuClose(); }}
-        >
-          Delete
-        </div>
-        <div 
-          style={{ padding: '8px 16px', cursor: 'pointer' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          onClick={() => { console.log('Rename document', contextMenu.itemKey); handleContextMenuClose(); }}
-        >
-          Rename
-        </div>
-        <div 
-          style={{ padding: '8px 16px', cursor: 'pointer' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          onClick={() => { console.log('Move document', contextMenu.itemKey); handleContextMenuClose(); }}
-        >
-          Move
-        </div>
-        <div 
-          style={{ padding: '8px 16px', cursor: 'pointer' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          onClick={() => { console.log('Copy document', contextMenu.itemKey); handleContextMenuClose(); }}
-        >
-          Copy
-        </div>
-        <div 
-          style={{ padding: '8px 16px', cursor: 'pointer' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          onClick={() => { console.log('Download document', contextMenu.itemKey); handleContextMenuClose(); }}
-        >
-          Download
-        </div>
-        <div 
-          style={{ padding: '8px 16px', cursor: 'pointer' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          onClick={() => { console.log('Print document', contextMenu.itemKey); handleContextMenuClose(); }}
-        >
-          Print
-        </div>
-        {showAccessControl && (
+        {getMenuItems(contextMenu.itemKey).map(menuItem => (
+          <div 
+            key={menuItem.key}
+            style={{ padding: '8px 16px', cursor: 'pointer' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            onClick={() => { 
+              menuItem.action(); 
+              handleContextMenuClose(); 
+            }}
+          >
+            {menuItem.label}
+          </div>
+        ))}
+        {/* {showAccessControl && (
           <div 
             style={{ padding: '8px 16px', cursor: 'pointer' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
@@ -400,7 +366,7 @@ export const DocumentsTable: React.FC<{
           >
             Close Access
           </div>
-        )}
+        )} */}
       </div>
     )}
     </div>
