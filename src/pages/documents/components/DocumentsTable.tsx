@@ -16,7 +16,7 @@ import {
   MenuPopover,
   MenuTrigger
 } from '@fluentui/react-components';
-import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled } from '@fluentui/react-icons';
+import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular } from '@fluentui/react-icons';
 import { useFavorites } from '@/features/favorites';
 
 const TABLE_COLUMNS = [
@@ -37,7 +37,8 @@ export const DocumentsTable: React.FC<{
   showAccessControl?: boolean,
   onCloseAccess?: (documentKey: string) => void,
   showBulkSelection?: boolean,
-  showAdvancedColumns?: boolean
+  showAdvancedColumns?: boolean,
+  pageType?: 'firm' | 'client'
 }> = ({ 
   items, 
   selectedItems, 
@@ -46,11 +47,33 @@ export const DocumentsTable: React.FC<{
   showAccessControl = false,
   onCloseAccess,
   showBulkSelection = false,
-  showAdvancedColumns = false
+  showAdvancedColumns = false,
+  pageType = 'firm'
 }) => {
   const styles = useStyles();
   const { toggleFavorite, isFavorite } = useFavorites();
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; itemKey: string } | null>(null);
+
+  const getMenuItems = (itemKey: string) => {
+    const baseItems = [
+      { key: 'copy', label: 'Copy', action: () => console.log('Copy document', itemKey) },
+      { key: 'delete', label: 'Delete', action: () => console.log('Delete document', itemKey) },
+      { key: 'edit', label: 'Edit', action: () => console.log('Edit document', itemKey) }
+    ];
+
+    if (pageType === 'firm') {
+      return [
+        { key: 'lock', label: 'Lock', action: () => console.log('Lock document', itemKey) },
+        { key: 'moveToClient', label: 'Move to Client Side', action: () => console.log('Move to Client Side', itemKey) },
+        ...baseItems
+      ];
+    } else {
+      return [
+        { key: 'moveToFirm', label: 'Move to Firm Side', action: () => console.log('Move to Firm Side', itemKey) },
+        ...baseItems
+      ];
+    }
+  };
 
   const handleContextMenu = (e: React.MouseEvent, itemKey: string) => {
     e.preventDefault();
@@ -112,12 +135,37 @@ export const DocumentsTable: React.FC<{
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
               <div style={{ fontWeight: 600, flex: 1 }}>{item.name}</div>
-              <Button
-                appearance="transparent"
-                icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
-                onClick={(e) => handleFavoriteClick(e, item.key)}
-                style={{ minWidth: 'auto', padding: '4px' }}
-              />
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <Button
+                  appearance="transparent"
+                  icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
+                  onClick={(e) => handleFavoriteClick(e, item.key)}
+                  style={{ minWidth: 'auto', padding: '4px' }}
+                />
+                <Menu>
+                  <MenuTrigger>
+                    <Button
+                      appearance="transparent"
+                      icon={<MoreHorizontal20Regular />}
+                      style={{ minWidth: 'auto', padding: '4px' }}
+                    />
+                  </MenuTrigger>
+                  <MenuPopover>
+                    <MenuList>
+                      {getMenuItems(item.key).map(menuItem => (
+                        <MenuItem 
+                          key={menuItem.key}
+                          onClick={() => {
+                            menuItem.action();
+                          }}
+                        >
+                          {menuItem.label}
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                  </MenuPopover>
+                </Menu>
+              </div>
             </div>
             <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Modified: {item.modified}</div>
             <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Created by: {item.createdBy}</div>
@@ -171,7 +219,7 @@ export const DocumentsTable: React.FC<{
               </>
             )}
             <TableHeaderCell style={{ width: '50px' }}>
-              <Text weight="semibold"></Text>
+              <Text weight="semibold">More</Text>
             </TableHeaderCell>
           </TableRow>
         </TableHeader>
@@ -236,6 +284,31 @@ export const DocumentsTable: React.FC<{
                   </TableCell>
                 </>
               )}
+              <TableCell>
+                <Menu>
+                  <MenuTrigger>
+                    <Button
+                      appearance="transparent"
+                      icon={<MoreHorizontal20Regular />}
+                      style={{ minWidth: 'auto', padding: '4px' }}
+                    />
+                  </MenuTrigger>
+                  <MenuPopover>
+                    <MenuList>
+                      {getMenuItems(item.key).map(menuItem => (
+                        <MenuItem 
+                          key={menuItem.key}
+                          onClick={() => {
+                            menuItem.action();
+                          }}
+                        >
+                          {menuItem.label}
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                  </MenuPopover>
+                </Menu>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

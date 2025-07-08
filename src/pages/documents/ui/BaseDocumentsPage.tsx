@@ -57,6 +57,14 @@ export default function BaseDocumentsPage({
   const styles = useStyles();
   const location = useLocation();
   const { getFavorites } = useFavorites();
+  
+  // Определяем тип страницы на основе пути
+  const getPageType = (): 'firm' | 'client' => {
+    if (location.pathname.includes('/client') || location.pathname.includes('/client-side')) {
+      return 'client';
+    }
+    return 'firm';
+  };
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [documents, setDocuments] = useState<Document[]>(initialDocuments.length > 0 ? initialDocuments : [
     { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active' },
@@ -157,6 +165,7 @@ export default function BaseDocumentsPage({
           isGridView={isGridView}
           showAccessControl={showAccessControl}
           onCloseAccess={handleCloseAccess}
+          pageType={getPageType()}
           {...customTableProps}
         />
       </div>
