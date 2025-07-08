@@ -9,7 +9,12 @@ import {
   TableBody, 
   TableCell, 
   Text,
-  Button
+  Button,
+  Menu,
+  MenuList,
+  MenuItem,
+  MenuPopover,
+  MenuTrigger
 } from '@fluentui/react-components';
 import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled } from '@fluentui/react-icons';
 import { useFavorites } from '@/features/favorites';
@@ -27,6 +32,30 @@ const TABLE_COLUMNS = [
 export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>, setSelectedItems: (s: Set<string>) => void, isGridView: boolean }> = ({ items, selectedItems, setSelectedItems, isGridView }) => {
   const styles = useStyles();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; itemKey: string } | null>(null);
+
+  const handleContextMenu = (e: React.MouseEvent, itemKey: string) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, itemKey });
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  };
+
+  // Закрытие контекстного меню при клике вне его
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      if (contextMenu) {
+        setContextMenu(null);
+      }
+    };
+
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [contextMenu]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -58,7 +87,11 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
     return (
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, padding: 16 }}>
         {items.map(item => (
-          <div key={item.key} style={{ border: '1px solid #eee', borderRadius: 8, padding: 16, minWidth: 200, maxWidth: 240, background: '#fafafa', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+          <div 
+            key={item.key} 
+            style={{ border: '1px solid #eee', borderRadius: 8, padding: 16, minWidth: 200, maxWidth: 240, background: '#fafafa', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', cursor: 'pointer' }}
+            onContextMenu={(e) => handleContextMenu(e, item.key)}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
               <div style={{ fontWeight: 600, flex: 1 }}>{item.name}</div>
               <Button
@@ -111,7 +144,11 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
         </TableHeader>
         <TableBody>
           {items.map(item => (
-            <TableRow key={item.key}>
+            <TableRow 
+              key={item.key}
+              onContextMenu={(e) => handleContextMenu(e, item.key)}
+              style={{ cursor: 'pointer' }}
+            >
               <TableCell>
                 <div className={styles.cellContent}>
                   <input 
@@ -148,9 +185,74 @@ export const DocumentsTable: React.FC<{ items: any[], selectedItems: Set<string>
         </TableBody>
       </Table>
     </div>
-
+    
+    {/* Контекстное меню */}
+    {contextMenu && (
+      <div 
+        style={{
+          position: 'fixed',
+          top: contextMenu.y,
+          left: contextMenu.x,
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          padding: '4px 0'
+        }}
+        onMouseLeave={handleContextMenuClose}
+      >
+        <div 
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          onClick={() => { console.log('Delete document', contextMenu.itemKey); handleContextMenuClose(); }}
+        >
+          Delete
+        </div>
+        <div 
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          onClick={() => { console.log('Rename document', contextMenu.itemKey); handleContextMenuClose(); }}
+        >
+          Rename
+        </div>
+        <div 
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          onClick={() => { console.log('Move document', contextMenu.itemKey); handleContextMenuClose(); }}
+        >
+          Move
+        </div>
+        <div 
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          onClick={() => { console.log('Copy document', contextMenu.itemKey); handleContextMenuClose(); }}
+        >
+          Copy
+        </div>
+        <div 
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          onClick={() => { console.log('Download document', contextMenu.itemKey); handleContextMenuClose(); }}
+        >
+          Download
+        </div>
+        <div 
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          onClick={() => { console.log('Print document', contextMenu.itemKey); handleContextMenuClose(); }}
+        >
+          Print
+        </div>
+      </div>
+    )}
     </div>
-   
   );
 }; 
 
