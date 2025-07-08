@@ -131,11 +131,12 @@ const useStyles = makeStyles({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    height: '400px',
+    height: '600px',
     backgroundColor: tokens.colorNeutralBackground1,
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     overflow: 'hidden',
+    // flex: 1,
     flexShrink: 0
   },
   header: {
@@ -157,7 +158,7 @@ const useStyles = makeStyles({
   messageCard: {
     padding: tokens.spacingHorizontalM,
     maxWidth: '70%',
-    minHeight: '48px',
+    minHeight: '70px',
     borderRadius: tokens.borderRadiusMedium,
     border: 'none',
     boxShadow: tokens.shadow4,
