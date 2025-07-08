@@ -6,7 +6,9 @@ import {
   Avatar, 
   Subtitle2, 
   Body2, 
-  Caption1 
+  Caption1,
+  tokens,
+  makeStyles
 } from '@fluentui/react-components';
 import { SendRegular } from '@fluentui/react-icons';
 
@@ -17,11 +19,14 @@ interface Message {
   timestamp: Date;
 }
 
+
+
 interface DocumentChatProps {
   documentName?: string;
 }
 
 export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
+  const styles = useStyles();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -53,56 +58,33 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 400 }}>
+    <div className={styles.container}>
       {/* Заголовок чата */}
-      <div style={{ padding: '12px 0', borderBottom: '1px solid #e1dfdd' }}>
-        <Subtitle2>Document chat</Subtitle2>
-        {documentName && (
-          <Body2 style={{ color: '#666', marginTop: 4 }}>
-            {documentName}
-          </Body2>
-        )}
+      <div className={styles.header}>
+        <Subtitle2>Document chat</Subtitle2>        
       </div>
 
       {/* История сообщений */}
-      <div style={{ 
-        flex: 1, 
-        overflow: 'auto', 
-        padding: '12px 0',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8
-      }}>
+      <div className={styles.messagesContainer}>
         {messages.map(msg => (
           <Card 
             key={msg.id} 
-            style={{ 
-              padding: 12,
-              maxWidth: '85%',
+            className={`${styles.messageCard} ${msg.sender === 'You' ? styles.userMessage : styles.otherMessage}`}
+            style={{
               alignSelf: msg.sender === 'You' ? 'flex-end' : 'flex-start',
-              backgroundColor: msg.sender === 'You' ? '#0078d4' : '#f3f2f1',
-              color: msg.sender === 'You' ? 'white' : 'inherit'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+            <div className={styles.messageContent}>
               <Avatar size={24}>
                 {msg.sender === 'System' ? 'S' : msg.sender[0]}
               </Avatar>
               <div style={{ flex: 1 }}>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 8, 
-                  marginBottom: 4 
-                }}>
-                  <Body2 style={{ 
-                    fontWeight: 500,
-                    color: msg.sender === 'You' ? 'white' : 'inherit'
-                  }}>
+                <div className={styles.messageHeader}>
+                  <Body2 style={{ fontWeight: 500 }}>
                     {msg.sender}
                   </Body2>
                   <Caption1 style={{ 
-                    color: msg.sender === 'You' ? 'rgba(255,255,255,0.8)' : '#666'
+                    color: msg.sender === 'You' ? 'rgba(255,255,255,0.8)' : tokens.colorNeutralForeground3
                   }}>
                     {msg.timestamp.toLocaleTimeString([], { 
                       hour: '2-digit', 
@@ -110,10 +92,7 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
                     })}
                   </Caption1>
                 </div>
-                <Body2 style={{ 
-                  color: msg.sender === 'You' ? 'white' : 'inherit',
-                  wordBreak: 'break-word'
-                }}>
+                <Body2 className={styles.messageText}>
                   {msg.text}
                 </Body2>
               </div>
@@ -123,30 +102,128 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
       </div>
       
       {/* Поле ввода */}
-      <div style={{ 
-        display: 'flex', 
-        gap: 8, 
-        padding: '12px 0',
-        borderTop: '1px solid #e1dfdd'
-      }}>
+      <div className={styles.inputContainer}>
         <Textarea 
           value={inputValue}
           onChange={(_, data) => setInputValue(data.value)}
           onKeyPress={handleKeyPress}
           placeholder="Type a message..."
-          style={{ flex: 1 }}
+          className={styles.textarea}
           resize="none"
           rows={2}
         />
-        <Button 
-          appearance="primary" 
-          onClick={sendMessage}
-          disabled={!inputValue.trim()}
-          icon={<SendRegular />}
-        >
-          Send
-        </Button>
+        <div className={styles.sendButton}>
+          <Button 
+            appearance="primary" 
+            onClick={sendMessage}
+            disabled={!inputValue.trim()}
+            icon={<SendRegular />}
+          >
+            Send
+          </Button>
+        </div>
       </div>
     </div>
   );
 }; 
+
+const useStyles = makeStyles({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '400px',
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    overflow: 'hidden',
+    flexShrink: 0
+  },
+  header: {
+    padding: tokens.spacingHorizontalM,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground2,
+    flexShrink: 0
+  },
+  messagesContainer: {
+    flex: 1,
+    overflow: 'auto',
+    padding: tokens.spacingHorizontalM,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+    backgroundColor: tokens.colorNeutralBackground1,
+    minHeight: 0
+  },
+  messageCard: {
+    padding: tokens.spacingHorizontalM,
+    maxWidth: '70%',
+    minHeight: '48px',
+    borderRadius: tokens.borderRadiusMedium,
+    border: 'none',
+    boxShadow: tokens.shadow4,
+    width: 'fit-content'
+  },
+  userMessage: {
+    alignSelf: 'flex-end',
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+    marginLeft: 'auto',
+    marginRight: 0
+  },
+  otherMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: tokens.colorNeutralBackground2,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    marginRight: 'auto',
+    marginLeft: 0
+  },
+  messageContent: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: tokens.spacingHorizontalS,
+    height: '100%',
+    minHeight: '32px'
+  },
+  messageHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    marginBottom: tokens.spacingVerticalXS
+  },
+  messageText: {
+    wordBreak: 'break-word',
+    lineHeight: tokens.lineHeightBase300
+  },
+  inputContainer: {
+    display: 'flex',
+    gap: tokens.spacingHorizontalS,
+    padding: tokens.spacingHorizontalM,
+    borderTop: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground2,
+    flexShrink: 0
+  },
+  textarea: {
+    flex: 1,
+    '& textarea': {
+      resize: 'none',
+      border: `1px solid ${tokens.colorNeutralStroke1}`,
+      borderRadius: tokens.borderRadiusMedium,
+      padding: tokens.spacingHorizontalS,
+      fontSize: tokens.fontSizeBase300,
+      lineHeight: tokens.lineHeightBase300,
+      '&:focus': {
+        outline: 'none'
+      }
+    }
+  },
+  sendButton: {
+    alignSelf: 'flex-end',
+    minWidth: 'auto',
+    height: '32px',
+    padding: `0 ${tokens.spacingHorizontalS}`,
+    '& button': {
+      height: '32px',
+      minWidth: 'auto'
+    }
+  }
+});
