@@ -238,8 +238,6 @@ export const DocumentsTable: React.FC<{
             <TableRow 
               key={item.key}
               onContextMenu={(e) => handleContextMenu(e, item.key)}
-              style={{ cursor: 'pointer' }}
-              onClick={() => onRowClick?.(item)}
             >
               <TableCell>
                 <div className={styles.cellContent}>
@@ -249,7 +247,12 @@ export const DocumentsTable: React.FC<{
                     onChange={(e) => handleSelectItem(item.key, e.target.checked)}
                   />
                   <DocumentBulletList20Regular />
-                  <Text>{item.name}</Text>
+                  <Text 
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onRowClick?.(item)}
+                  >
+                    {item.name}
+                  </Text>
                 </div>
               </TableCell>
               <TableCell>

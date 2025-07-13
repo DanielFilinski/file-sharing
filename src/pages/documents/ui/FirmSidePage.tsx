@@ -14,7 +14,7 @@ const firmDocuments: Document[] = [
 
 export default function FirmSidePage() {
   return (
-    <BaseDocumentsPage 
+    <BaseDocumentsPage
       initialDocuments={firmDocuments}
       showAccessControl={true}
       customToolbarProps={{
