@@ -6,8 +6,8 @@ import StorageSettings from '@/pages/settings/storage/Storage';
 import ValidationSettingsForm from '@/pages/settings/validation/Validation';
 import { ToEndUser } from '@/app/pages/ToEndUser';
 import { FromEndUser } from '@/app/pages/FromEndUser';
-import { Users } from '@/app/pages/Users';
-import { Employees } from '@/app/pages/Employees';
+import { FirmUser } from '@/pages/settings/storage/Employees';
+import { ClientSettings } from '@/pages/settings/storage/Users';
 
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -62,11 +62,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'users',
-        element: <Users />,
+        element: <ClientSettings />,
       },
       {
         path: 'employees',
-        element: <Employees />,
+        element: <FirmUser />,
       },
       {
         path: 'leads',
