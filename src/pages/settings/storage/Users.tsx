@@ -96,7 +96,7 @@ export const ClientSettings = () => {
   
   
   // Form states
-  const [storageType, setStorageType] = useState('');
+  const [storageType, setStorageType] = useState('cloud');
   const [sharePointEmail, setSharePointEmail] = useState('');
   const [sharePointPassword, setSharePointPassword] = useState('');
   const [connectionStatus, setConnectionStatus] = useState('');
@@ -270,7 +270,7 @@ export const ClientSettings = () => {
         <Button 
           appearance="primary" 
           icon={<Save24Regular />}
-          style={{ backgroundColor: '#9333EA' }}
+          style={{ backgroundColor: tokens.colorBrandBackground }}
         >
           Save changes
         </Button>
@@ -295,8 +295,8 @@ export const ClientSettings = () => {
                     onClick={() => setStorageType('cloud')}
                   >
                     <div className={styles.storageTypeContent}>
-                      <CloudAdd24Regular style={{ color: '#9333EA' }} />
-                      <div>
+                      <CloudAdd24Regular style={{ color: tokens.colorBrandForeground1 }} />
+                      <div className={styles.rows}>
                         <Body1>Cloud Storage</Body1>
                         <Caption1>SharePoint</Caption1>
                       </div>
@@ -310,8 +310,8 @@ export const ClientSettings = () => {
                     onClick={() => setStorageType('physical')}
                   >
                     <div className={styles.storageTypeContent}>
-                      <HardDrive24Regular style={{ color: '#9333EA' }} />
-                      <div>
+                      <HardDrive24Regular style={{ color: tokens.colorBrandForeground1 }} />
+                      <div className={styles.rows}>
                         <Body1>Physical Storage</Body1>
                         <Caption1>Local/Network</Caption1>
                       </div>
@@ -351,7 +351,7 @@ export const ClientSettings = () => {
                         icon={connectionStatus === 'verifying' ? <Spinner size="tiny" /> : <CheckmarkCircle24Filled />}
                         onClick={handleVerifyCredentials}
                         disabled={connectionStatus === 'verifying'}
-                        style={{ backgroundColor: '#9333EA' }}
+                        style={{ backgroundColor: tokens.colorBrandBackground }}
                       >
                         {connectionStatus === 'verifying' ? 'Verifying...' : 'Verify'}
                       </Button>
@@ -388,8 +388,8 @@ export const ClientSettings = () => {
                       onClick={() => setDeviceType('current')}
                     >
                       <div className={styles.deviceContent}>
-                        <Desktop24Regular style={{ color: '#9333EA' }} />
-                        <div>
+                        <Desktop24Regular style={{ color: tokens.colorBrandForeground1 }} />
+                        <div className={styles.rows} style={{ alignItems: 'flex-start' }}>
                           <Body1>Current Computer</Body1>
                           <Caption1>Local storage</Caption1>
                         </div>
@@ -403,8 +403,8 @@ export const ClientSettings = () => {
                       onClick={() => setDeviceType('network')}
                     >
                       <div className={styles.deviceContent}>
-                        <NetworkAdapter16Regular style={{ color: '#9333EA' }} />
-                        <div>
+                        <NetworkAdapter16Regular style={{ color: tokens.colorBrandForeground1 }} />
+                        <div className={styles.rows} style={{ alignItems: 'flex-start' }}>
                           <Body1>Network Device</Body1>
                           <Caption1>Shared storage</Caption1>
                         </div>
@@ -450,14 +450,14 @@ export const ClientSettings = () => {
                         <div className={styles.distributionCard}>
                           <Body1>DMS</Body1>
                           <Caption1 style={{ marginBottom: tokens.spacingVerticalXS }}>Internal only</Caption1>
-                          <Body1 style={{ color: '#9333EA', fontWeight: tokens.fontWeightMedium }}>
+                          <Body1 style={{ color: tokens.colorBrandForeground1, fontWeight: tokens.fontWeightMedium }}>
                             {storageAmount ? `${Math.floor(parseInt(storageAmount) / 2)} ${storageUnit}` : '-- GB'}
                           </Body1>
                         </div>
                         <div className={styles.distributionCard}>
                           <Body1>Portal</Body1>
                           <Caption1 style={{ marginBottom: tokens.spacingVerticalXS }}>Client access</Caption1>
-                          <Body1 style={{ color: '#9333EA', fontWeight: tokens.fontWeightMedium }}>
+                          <Body1 style={{ color: tokens.colorBrandForeground1, fontWeight: tokens.fontWeightMedium }}>
                             {storageAmount ? `${Math.floor(parseInt(storageAmount) / 2)} ${storageUnit}` : '-- GB'}
                           </Body1>
                         </div>
@@ -617,7 +617,7 @@ export const ClientSettings = () => {
                             appearance="primary"
                             icon={<Add24Regular />}
                             onClick={addClientType}
-                            style={{ backgroundColor: '#9333EA' }}
+                            style={{ backgroundColor: tokens.colorBrandBackground }}
                           />
                         </div>
                       </div>
@@ -748,7 +748,7 @@ export const ClientSettings = () => {
                 appearance="primary"
                 icon={<Save24Regular />}
                 onClick={saveCurrentAsTemplate}
-                style={{ backgroundColor: '#9333EA' }}
+                style={{ backgroundColor: tokens.colorBrandBackground }}
               >
                 Save Template
               </Button>
@@ -813,7 +813,7 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalM,
   },
   brandIcon: {
-    color: '#9333EA',
+    color: tokens.colorBrandForeground1,
   },
   mainContent: {
     flex: 1,
@@ -860,6 +860,13 @@ const useStyles = makeStyles({
       gridTemplateColumns: '1fr',
     },
   },
+  rows: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // gap: tokens.spacingHorizontalM,
+  },
   storageTypeCard: {
     padding: tokens.spacingVerticalL,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
@@ -873,7 +880,7 @@ const useStyles = makeStyles({
     },
   },
   storageTypeCardSelected: {
-    border: '1px solid #9333EA',
+    border: `1px solid ${tokens.colorBrandStroke1}`,
     backgroundColor: tokens.colorBrandBackground2,
   },
   storageTypeContent: {
@@ -902,7 +909,7 @@ const useStyles = makeStyles({
     },
   },
   deviceCardSelected: {
-    border: '1px solid #9333EA',
+    border: `1px solid ${tokens.colorBrandStroke1}`,
     backgroundColor: tokens.colorBrandBackground2,
   },
   deviceContent: {
@@ -1027,9 +1034,9 @@ const useStyles = makeStyles({
     padding: tokens.spacingVerticalXXL,
   },
   buttonPrimary: {
-    backgroundColor: '#9333EA',
+    backgroundColor: tokens.colorBrandBackground,
     '&:hover': {
-      backgroundColor: '#7c2dcf',
+      backgroundColor: tokens.colorBrandBackgroundHover,
     },
   },
   connectionStatus: {
