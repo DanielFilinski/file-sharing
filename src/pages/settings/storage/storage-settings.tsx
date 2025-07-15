@@ -91,7 +91,7 @@ interface PreviewStructure {
   "Document Organization": Record<string, string[]>;
 }
 
-export const ClientSettings = () => {
+export const StorageSettings = () => {
   const styles = useStyles();
   
   
@@ -345,17 +345,13 @@ export const ClientSettings = () => {
                       />
                     </Field>
                     
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Button
-                        appearance="primary"
-                        icon={connectionStatus === 'verifying' ? <Spinner size="tiny" /> : <CheckmarkCircle24Filled />}
-                        onClick={handleVerifyCredentials}
-                        disabled={connectionStatus === 'verifying'}
-                        style={{ backgroundColor: tokens.colorBrandBackground }}
-                      >
-                        {connectionStatus === 'verifying' ? 'Verifying...' : 'Verify'}
-                      </Button>
-                      
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: tokens.spacingHorizontalM }}>
+                      {connectionStatus === 'invalid' && (
+                        <div className={styles.statusError}>
+                          <DismissCircle24Filled />
+                          <Caption1>Invalid</Caption1>
+                        </div>
+                      )}
                       {connectionStatus === 'established' && (
                         <div className={styles.statusConnected}>
                           <CheckmarkCircle24Filled />
@@ -363,12 +359,22 @@ export const ClientSettings = () => {
                         </div>
                       )}
                       
-                      {connectionStatus === 'invalid' && (
-                        <div className={styles.statusError}>
-                          <DismissCircle24Filled />
-                          <Caption1>Invalid</Caption1>
-                        </div>
-                      )}
+                      <Button
+                        appearance="primary"
+                        icon={connectionStatus === 'verifying' ? <Spinner size="tiny" /> : <CheckmarkCircle24Filled />}
+                        onClick={handleVerifyCredentials}
+                        disabled={connectionStatus === 'verifying'}
+                        style={{ backgroundColor: tokens.colorBrandBackground }}
+                      >
+                        {
+                        connectionStatus === 'verifying' ? 'Verifying...' : 
+                        connectionStatus === 'invalid' ? 'Verify' :
+                        connectionStatus === 'valid' ? 'Connected' :
+                        'Verify'}
+                      </Button>
+                      
+                      
+                      
                     </div>
                   </div>
                 </Card>
@@ -511,8 +517,8 @@ export const ClientSettings = () => {
                     </div>
                     
                     <div className={styles.retentionInfo}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: tokens.spacingHorizontalM }}>
-                        <Clock24Regular style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <div className={styles.retentionInfoContent}>
+                        <Clock24Regular className={styles.retentionIcon} />
                         <Caption1>
                           Data will be automatically deleted after the retention period expires
                         </Caption1>
@@ -942,6 +948,15 @@ const useStyles = makeStyles({
     padding: tokens.spacingVerticalL,
     border: `1px solid ${tokens.colorPaletteGreenBorder2}`,
     color: tokens.colorPaletteGreenForeground2,
+  },
+  retentionInfoContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalM,
+  },
+  retentionIcon: {
+    flexShrink: 0,
+    fontSize: '16px',
   },
   clientTypesList: {
     display: 'flex',

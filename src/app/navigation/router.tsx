@@ -2,12 +2,11 @@ import { Layout } from '@/components/Layout';
 import DmsMainScreen from '@/pages/documents/ui/DocumentsPage';
 import ApprovalSettingsForm from '@/pages/settings/approval/Approval';
 import OrganizationSettings from '@/pages/settings/organization/Organization';
-import StorageSettings from '@/pages/settings/storage/Storage';
 import ValidationSettingsForm from '@/pages/settings/validation/Validation';
 import { ToEndUser } from '@/app/pages/ToEndUser';
 import { FromEndUser } from '@/app/pages/FromEndUser';
-import { FirmUser } from '@/pages/settings/storage/Employees';
-import { ClientSettings } from '@/pages/settings/storage/Users';
+import { FirmUser } from '@/pages/settings/users/users-settings';
+import { StorageSettings} from '@/pages/settings/storage/storage-settings';
 
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -42,7 +41,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'settings/storage',
-        element: <ClientSettings />,
+        element: <StorageSettings />,
       },
       {
         path: 'settings/validation',
@@ -54,24 +53,23 @@ export const router = createBrowserRouter([
       },
       {
         path: 'to-end-user',
-        element: <ToEndUser />,
+        // element: <ToEndUser />,
+        element: <DmsMainScreen />,
       },
       {
         path: 'from-end-user',
-        element: <FromEndUser />,
-      },
-      {
-        path: 'users',
-        element: <ClientSettings />,
-      },
-      {
-        path: 'employees',
-        element: <FirmUser />,
+        // element: <FromEndUser />,
+        element: <DmsMainScreen />,
       },
       {
         path: 'leads',
         element: <Leads />,
       },
+      {
+        path: 'settings/users',
+        element: <FirmUser />,
+      },
+
     ],
   },
 ]);
