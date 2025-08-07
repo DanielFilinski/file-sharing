@@ -8,24 +8,31 @@ import {
   Body2, 
   Caption1,
   tokens,
-  makeStyles
+  makeStyles,
+  Badge
 } from '@fluentui/react-components';
-import { SendRegular } from '@fluentui/react-icons';
+import { SendRegular, CommentRegular } from '@fluentui/react-icons';
+import { DocumentFragment, DocumentComment } from '@/types/document';
 
 interface Message {
   id: number;
   text: string;
   sender: string;
   timestamp: Date;
+  fragment?: DocumentFragment; // Новое поле для связи с фрагментом
 }
-
-
 
 interface DocumentChatProps {
   documentName?: string;
+  selectedFragment?: DocumentFragment;
+  onFragmentSelect: (fragment: DocumentFragment) => void;
 }
 
-export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
+export const DocumentChat: React.FC<DocumentChatProps> = ({ 
+  documentName, 
+  selectedFragment,
+  onFragmentSelect 
+}) => {
   const styles = useStyles();
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -43,11 +50,16 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
         id: Date.now(),
         text: inputValue,
         sender: 'You',
-        timestamp: new Date()
+        timestamp: new Date(),
+        fragment: selectedFragment // Привязываем к выбранному фрагменту
       };
       setMessages(prev => [...prev, newMessage]);
       setInputValue('');
     }
+  };
+
+  const handleFragmentClick = (fragment: DocumentFragment) => {
+    onFragmentSelect(fragment);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -61,7 +73,17 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
     <div className={styles.container}>
       {/* Заголовок чата */}
       <div className={styles.header}>
-        <Subtitle2>Document chat</Subtitle2>        
+        <Subtitle2>Document chat</Subtitle2>
+        {selectedFragment && (
+          <div className={styles.selectedFragment}>
+            <Badge appearance="filled" color="brand">
+              Выбран фрагмент
+            </Badge>
+            <Body2 className={styles.fragmentText}>
+              "{selectedFragment.text.substring(0, 30)}..."
+            </Body2>
+          </div>
+        )}
       </div>
 
       {/* История сообщений */}
@@ -95,6 +117,15 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
                 <Body2 className={styles.messageText}>
                   {msg.text}
                 </Body2>
+                {msg.fragment && (
+                  <div 
+                    className={styles.fragmentReference}
+                    onClick={() => handleFragmentClick(msg.fragment!)}
+                  >
+                    <CommentRegular />
+                    <Body2>Фрагмент: "{msg.fragment.text.substring(0, 50)}..."</Body2>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
@@ -107,7 +138,10 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
           value={inputValue}
           onChange={(_, data) => setInputValue(data.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Type a message..."
+          placeholder={selectedFragment ? 
+            `Комментировать фрагмент: "${selectedFragment.text.substring(0, 30)}..."` : 
+            "Type a message..."
+          }
           className={styles.textarea}
           resize="none"
           rows={2}
@@ -225,6 +259,31 @@ const useStyles = makeStyles({
     '& button': {
       height: '32px',
       minWidth: 'auto'
+    }
+  },
+  selectedFragment: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalS,
+    marginTop: tokens.spacingVerticalS
+  },
+  fragmentText: {
+    fontSize: '12px',
+    color: tokens.colorNeutralForeground2,
+    fontStyle: 'italic'
+  },
+  fragmentReference: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    marginTop: tokens.spacingVerticalXS,
+    padding: tokens.spacingHorizontalXS,
+    backgroundColor: tokens.colorNeutralBackground2,
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease',
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground3
     }
   }
 });

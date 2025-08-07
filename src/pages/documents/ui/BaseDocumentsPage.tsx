@@ -42,6 +42,8 @@ export interface Document {
   shared: boolean;
   status: string;
   lock: boolean;
+  type: 'pdf' | 'docx' | 'xlsx';
+  url?: string;
 }
 
 export interface BaseDocumentsPageProps {
@@ -70,13 +72,13 @@ export default function BaseDocumentsPage({
   };
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [documents, setDocuments] = useState<Document[]>(initialDocuments.length > 0 ? initialDocuments : [
-    { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active', lock: false },
-    { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'Active', lock: false },
-    { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'Active', lock: false },
-    { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark', owner: 'other', shared: true, status: 'Active', lock: false },
-    { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false },
-    { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'other', shared: true, status: 'Active', lock: false },
-    { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false },
+    { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active', lock: false, type: 'docx', url: 'https://example.com/proposal.docx' },
+    { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'Active', lock: false, type: 'docx', url: 'https://example.com/notes.docx' },
+    { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'Active', lock: false, type: 'xlsx', url: 'https://example.com/budget.xlsx' },
+    { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark', owner: 'other', shared: true, status: 'Active', lock: false, type: 'pdf', url: 'https://example.com/guidelines.pdf' },
+    { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false, type: 'docx', url: 'https://example.com/mockups.pptx' },
+    { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'other', shared: true, status: 'Active', lock: false, type: 'docx', url: 'https://example.com/mockups2.pptx' },
+    { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false, type: 'docx', url: 'https://example.com/mockups3.pptx' },
   ]);
   const [isGridView, setIsGridView] = useState(false);
   const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites'>('All Documents');
@@ -90,6 +92,14 @@ export default function BaseDocumentsPage({
       presentation: 'pptx',
       form: 'form'
     }[type] || 'docx';
+    
+    const docType = {
+      document: 'docx',
+      spreadsheet: 'xlsx',
+      presentation: 'docx',
+      form: 'docx'
+    }[type] as 'pdf' | 'docx' | 'xlsx';
+    
     setDocuments(prev => [
       ...prev,
       {
@@ -101,7 +111,9 @@ export default function BaseDocumentsPage({
         owner: 'me',
         shared: false,
         status: 'Active',
-        lock: false
+        lock: false,
+        type: docType,
+        url: `https://example.com/new-${type}.${ext}`
       }
     ]);
   };
@@ -112,17 +124,25 @@ export default function BaseDocumentsPage({
   };
 
   const handleUploadFiles = (files: FileList) => {
-    const newDocs = Array.from(files).map(file => ({
-      key: (Math.random() * 100000).toFixed(0),
-      name: file.name,
-      modified: 'just now',
-      createdBy: 'You',
-      modifiedBy: 'You',
-      owner: 'me' as const,
-      shared: false,
-      status: 'Active',
-      lock: false
-    }));
+    const newDocs = Array.from(files).map(file => {
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      const type = extension === 'pdf' ? 'pdf' : 
+                  extension === 'xlsx' ? 'xlsx' : 'docx';
+      
+      return {
+        key: (Math.random() * 100000).toFixed(0),
+        name: file.name,
+        modified: 'just now',
+        createdBy: 'You',
+        modifiedBy: 'You',
+        owner: 'me' as const,
+        shared: false,
+        status: 'Active',
+        lock: false,
+        type: type as 'pdf' | 'docx' | 'xlsx',
+        url: `https://example.com/${file.name}`
+      };
+    });
     setDocuments(prev => [...prev, ...newDocs]);
   };
 
