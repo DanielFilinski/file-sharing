@@ -10,9 +10,29 @@ import {
   Body2, 
   Subtitle2 
 } from '@fluentui/react-components';
-import { Person20Regular } from '@fluentui/react-icons';
+import { Person20Regular, Mail20Regular } from '@fluentui/react-icons';
 import { Document } from '../ui/BaseDocumentsPage';
 import { DocumentChat } from './DocumentChat';
+
+// Функция для получения цвета статуса
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Active':
+      return 'success';
+    case 'pending validation':
+      return 'warning';
+    case 'validation in process':
+      return 'informative';
+    case 'pending review':
+      return 'danger';
+    case 'Locked':
+      return 'subtle';
+    case 'Access Closed':
+      return 'subtle';
+    default:
+      return 'brand';
+  }
+};
 
 interface DocumentDetailsDrawerProps {
   isOpen: boolean;
@@ -45,7 +65,7 @@ export const DocumentDetailsDrawer: React.FC<DocumentDetailsDrawerProps> = ({
         >
          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <Title2>{selectedDoc?.name}</Title2>
-            <Badge appearance="filled" color={selectedDoc?.status === 'Active' ? 'brand' : 'danger'}>
+            <Badge appearance="filled" color={getStatusColor(selectedDoc?.status || '')}>
               {selectedDoc?.status}
             </Badge>
           </div>
@@ -71,6 +91,14 @@ export const DocumentDetailsDrawer: React.FC<DocumentDetailsDrawerProps> = ({
                 <Person20Regular /> <Body2>{selectedDoc?.modifiedBy}</Body2>
               </span>
             </div>
+            {selectedDoc?.clientEmail && (
+              <div>
+                <Subtitle2>Client Email:</Subtitle2>
+                <span style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <Mail20Regular /> <Body2>{selectedDoc.clientEmail}</Body2>
+                </span>
+              </div>
+            )}
             <div>
               <Subtitle2>Approved by:</Subtitle2>
               <span style={{ marginLeft: 8, color: '#888' }}><Body2>—</Body2></span>

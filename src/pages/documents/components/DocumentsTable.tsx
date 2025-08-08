@@ -14,7 +14,8 @@ import {
   MenuList,
   MenuItem,
   MenuPopover,
-  MenuTrigger
+  MenuTrigger,
+  Badge
 } from '@fluentui/react-components';
 import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular, LockClosed20Regular, LockOpen20Regular } from '@fluentui/react-icons';
 import { useFavorites } from '@/features/favorites';
@@ -24,6 +25,7 @@ const TABLE_COLUMNS = [
   { key: 'modified', name: 'Modified' },
   { key: 'createdBy', name: 'Created by' },
   { key: 'modifiedBy', name: 'Modified by' },
+  { key: 'clientEmail', name: 'Client Email' },
   { key: 'favorite', name: 'Favorite' },
   { key: 'status', name: 'Status' }
 ];
@@ -33,6 +35,26 @@ const CLIENT_COLUMNS = [
   { key: 'modified', name: 'Modified' },
   { key: 'status', name: 'Status' }
 ];
+
+// Функция для получения цвета статуса
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Active':
+      return 'success';
+    case 'pending validation':
+      return 'warning';
+    case 'validation in process':
+      return 'informative';
+    case 'pending review':
+      return 'danger';
+    case 'Locked':
+      return 'subtle';
+    case 'Access Closed':
+      return 'subtle';
+    default:
+      return 'brand';
+  }
+};
 
 
 export const DocumentsTable: React.FC<{ 
@@ -189,9 +211,15 @@ export const DocumentsTable: React.FC<{
             {pageType === 'firm' && (
               <>
                 <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Created by: {item.createdBy}</div>
-                <div style={{ fontSize: 12, color: '#888' }}>Modified by: {item.modifiedBy}</div>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Modified by: {item.modifiedBy}</div>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Client: {item.clientEmail || '-'}</div>
               </>
             )}
+            <div style={{ marginTop: 8 }}>
+              <Badge appearance="filled" color={getStatusColor(item.status)}>
+                {item.status}
+              </Badge>
+            </div>
           </div>
         ))}
       </div>
@@ -279,6 +307,9 @@ export const DocumentsTable: React.FC<{
                       <Text>{item.modifiedBy}</Text>
                     </TableCell>
                     <TableCell>
+                      <Text>{item.clientEmail || '-'}</Text>
+                    </TableCell>
+                    <TableCell>
                       <Button
                         appearance="transparent"
                         icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
@@ -289,7 +320,9 @@ export const DocumentsTable: React.FC<{
                   </>
                 )}
                 <TableCell>
-                  <Text>{item.status}</Text>
+                  <Badge appearance="filled" color={getStatusColor(item.status)}>
+                    {item.status}
+                  </Badge>
                 </TableCell>
                 {showAccessControl && (
                   <TableCell>

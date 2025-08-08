@@ -37,8 +37,10 @@ export const Toolbar: React.FC<{
   onUploadFiles: (files: FileList) => void,
   showBulkActions?: boolean,
   showAdvancedFilters?: boolean,
-  pageType?: 'firm' | 'client'
-}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm' }) => {
+  pageType?: 'firm' | 'client',
+  statusFilter?: string,
+  onStatusFilterChange?: (status: string) => void
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm', statusFilter = 'All', onStatusFilterChange }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -202,8 +204,30 @@ export const Toolbar: React.FC<{
       </div>
       
       <div className={styles.toolbarRight}>
+        {showAdvancedFilters && onStatusFilterChange && (
+          <Menu>
+            <MenuTrigger>
+              <MenuButton
+                appearance="secondary"
+                shape="rounded"
+              >
+                Status: {statusFilter}
+              </MenuButton>
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItem onClick={() => onStatusFilterChange('All')}>All Statuses</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('Active')}>Active</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('pending validation')}>Pending Validation</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('validation in process')}>Validation in Process</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('pending review')}>Pending Review</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('Locked')}>Locked</MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        )}
         <Text className={styles.selectedText}>
-          {selectedCount > 0 ? `${selectedCount} selected` : ''}
+          {selectedCount} selected
         </Text>
         {showBulkActions && selectedCount > 0 && (
           <div className={styles.bulkActions}>

@@ -40,8 +40,9 @@ export interface Document {
   modifiedBy: string;
   owner: 'me' | 'other';
   shared: boolean;
-  status: string;
+  status: 'Active' | 'pending validation' | 'validation in process' | 'pending review' | 'Locked' | 'Access Closed';
   lock: boolean;
+  clientEmail?: string; // Email клиента, который загрузил документ
 }
 
 export interface BaseDocumentsPageProps {
@@ -73,16 +74,17 @@ export default function BaseDocumentsPage({
   };
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [documents, setDocuments] = useState<Document[]>(initialDocuments.length > 0 ? initialDocuments : [
-    { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active', lock: false },
-    { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'Active', lock: false },
-    { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'Active', lock: false },
-    { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark', owner: 'other', shared: true, status: 'Active', lock: false },
-    { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false },
-    { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'other', shared: true, status: 'Active', lock: false },
-    { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false },
+    { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active', lock: false, clientEmail: 'john.smith@company.com' },
+    { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'pending validation', lock: false, clientEmail: 'alice.johnson@client.com' },
+    { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'validation in process', lock: false, clientEmail: 'mike.brown@enterprise.com' },
+    { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark', owner: 'other', shared: true, status: 'pending review', lock: false, clientEmail: 'emma.wilson@partners.com' },
+    { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false, clientEmail: 'lisa.anderson@design.com' },
+    { key: '6', name: 'Contract Agreement.pdf', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'other', shared: true, status: 'pending validation', lock: false, clientEmail: 'contract@legal.com' },
+    { key: '7', name: 'Financial Report.xlsx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'validation in process', lock: false, clientEmail: 'finance@accounting.com' },
   ]);
   const [isGridView, setIsGridView] = useState(false);
   const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites'>('All Documents');
+  const [statusFilter, setStatusFilter] = useState<string>('All');
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -103,8 +105,9 @@ export default function BaseDocumentsPage({
         modifiedBy: 'You',
         owner: 'me',
         shared: false,
-        status: 'Active',
-        lock: false
+        status: 'Active' as const,
+        lock: false,
+        clientEmail: 'user@example.com'
       }
     ]);
   };
@@ -123,8 +126,9 @@ export default function BaseDocumentsPage({
       modifiedBy: 'You',
       owner: 'me' as const,
       shared: false,
-      status: 'Active',
-      lock: false
+      status: 'pending validation' as const,
+      lock: false,
+      clientEmail: 'client@example.com'
     }));
     setDocuments(prev => [...prev, ...newDocs]);
   };
@@ -132,7 +136,7 @@ export default function BaseDocumentsPage({
   const handleCloseAccess = (documentKey: string) => {
     setDocuments(prev => prev.map(doc => 
       doc.key === documentKey 
-        ? { ...doc, shared: false, status: 'Access Closed', lock: false }
+        ? { ...doc, shared: false, status: 'Access Closed' as const, lock: false }
         : doc
     ));
   };
@@ -163,6 +167,11 @@ export default function BaseDocumentsPage({
     const favoriteKeys = getFavorites();
     filteredDocuments = documents.filter(d => favoriteKeys.includes(d.key));
   }
+  
+  // Фильтрация по статусу
+  if (statusFilter !== 'All') {
+    filteredDocuments = filteredDocuments.filter(d => d.status === statusFilter);
+  }
 
   useEffect(() => {
     if (location.pathname === '/favorites') {
@@ -184,6 +193,8 @@ export default function BaseDocumentsPage({
           onFilterChange={handleFilterChange} 
           onUploadFiles={handleUploadFiles}
           pageType={getPageType()}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
           {...customToolbarProps}
         />
         <Breadcrumbs /> 
