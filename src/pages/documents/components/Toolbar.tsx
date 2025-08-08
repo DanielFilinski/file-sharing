@@ -36,8 +36,9 @@ export const Toolbar: React.FC<{
   onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => void,
   onUploadFiles: (files: FileList) => void,
   showBulkActions?: boolean,
-  showAdvancedFilters?: boolean
-}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false }) => {
+  showAdvancedFilters?: boolean,
+  pageType?: 'firm' | 'client'
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm' }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -158,26 +159,28 @@ export const Toolbar: React.FC<{
   return (
     <div className={styles.toolbar}>
       <div className={styles.toolbarLeft}>
-        <Menu>
-          <MenuTrigger>
-            <MenuButton
-              icon={<AddRegular />}
-              appearance="primary"
-              shape="rounded"
-              className={styles.primaryButton}
-            >
-              New
-            </MenuButton>
-          </MenuTrigger>
-          <MenuPopover>
-            <MenuList>
-              <MenuItem onClick={() => onAddItem('document')}>Document</MenuItem>
-              <MenuItem onClick={() => onAddItem('spreadsheet')}>Spreadsheet</MenuItem>
-              <MenuItem onClick={() => onAddItem('presentation')}>Presentation</MenuItem>
-              <MenuItem onClick={() => onAddItem('form')}>Form</MenuItem>
-            </MenuList>
-          </MenuPopover>
-        </Menu>
+        {pageType === 'firm' && (
+          <Menu>
+            <MenuTrigger>
+              <MenuButton
+                icon={<AddRegular />}
+                appearance="primary"
+                shape="rounded"
+                className={styles.primaryButton}
+              >
+                New
+              </MenuButton>
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItem onClick={() => onAddItem('document')}>Document</MenuItem>
+                <MenuItem onClick={() => onAddItem('spreadsheet')}>Spreadsheet</MenuItem>
+                <MenuItem onClick={() => onAddItem('presentation')}>Presentation</MenuItem>
+                <MenuItem onClick={() => onAddItem('form')}>Form</MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        )}
         {visibleButtons ? renderMainButtons() : (
           <Menu>
             <MenuTrigger>

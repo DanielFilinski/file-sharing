@@ -7,6 +7,7 @@ import { ToEndUser } from '@/app/pages/ToEndUser';
 import { FromEndUser } from '@/app/pages/FromEndUser';
 import { FirmUser } from '@/pages/settings/users/users-settings';
 import { StorageSettings} from '@/pages/settings/storage/storage-settings';
+import ClientSidePage from '@/pages/documents/ui/ClientSidePage';
 
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -25,7 +26,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'client-side',
-        element: <DmsMainScreen />,
+        element: <ClientSidePage />,
       },
       {
         path: 'firm-side',
@@ -53,13 +54,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'to-end-user',
-        // element: <ToEndUser />,
-        element: <DmsMainScreen />,
+        element: <ClientSidePage />,
       },
       {
         path: 'from-end-user',
-        // element: <FromEndUser />,
-        element: <DmsMainScreen />,
+        element: <ClientSidePage />,
       },
       {
         path: 'leads',

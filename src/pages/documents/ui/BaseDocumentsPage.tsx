@@ -63,7 +63,10 @@ export default function BaseDocumentsPage({
   
   // Определяем тип страницы на основе пути
   const getPageType = (): 'firm' | 'client' => {
-    if (location.pathname.includes('/client') || location.pathname.includes('/client-side')) {
+    if (location.pathname.includes('/client') || 
+        location.pathname.includes('/client-side') || 
+        location.pathname.includes('/to-end-user') || 
+        location.pathname.includes('/from-end-user')) {
       return 'client';
     }
     return 'firm';
@@ -180,6 +183,7 @@ export default function BaseDocumentsPage({
           documentFilter={documentFilter} 
           onFilterChange={handleFilterChange} 
           onUploadFiles={handleUploadFiles}
+          pageType={getPageType()}
           {...customToolbarProps}
         />
         <Breadcrumbs /> 

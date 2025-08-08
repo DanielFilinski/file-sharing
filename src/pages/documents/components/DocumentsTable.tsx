@@ -26,7 +26,13 @@ const TABLE_COLUMNS = [
   { key: 'modifiedBy', name: 'Modified by' },
   { key: 'favorite', name: 'Favorite' },
   { key: 'status', name: 'Status' }
-];  
+];
+
+const CLIENT_COLUMNS = [
+  { key: 'name', name: 'Name' },
+  { key: 'modified', name: 'Modified' },
+  { key: 'status', name: 'Status' }
+];
 
 
 export const DocumentsTable: React.FC<{ 
@@ -146,12 +152,14 @@ export const DocumentsTable: React.FC<{
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
               <div style={{ fontWeight: 600, flex: 1 }}>{item.name}</div>
               <div style={{ display: 'flex', gap: '4px' }}>
-                <Button
-                  appearance="transparent"
-                  icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
-                  onClick={(e) => handleFavoriteClick(e, item.key)}
-                  style={{ minWidth: 'auto', padding: '4px' }}
-                />
+                {pageType === 'firm' && (
+                  <Button
+                    appearance="transparent"
+                    icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
+                    onClick={(e) => handleFavoriteClick(e, item.key)}
+                    style={{ minWidth: 'auto', padding: '4px' }}
+                  />
+                )}
                 <Menu>
                   <MenuTrigger>
                     <Button
@@ -178,8 +186,12 @@ export const DocumentsTable: React.FC<{
               </div>
             </div>
             <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Modified: {item.modified}</div>
-            <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Created by: {item.createdBy}</div>
-            <div style={{ fontSize: 12, color: '#888' }}>Modified by: {item.modifiedBy}</div>
+            {pageType === 'firm' && (
+              <>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Created by: {item.createdBy}</div>
+                <div style={{ fontSize: 12, color: '#888' }}>Modified by: {item.modifiedBy}</div>
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -188,99 +200,103 @@ export const DocumentsTable: React.FC<{
 
   return (
     <div style={{position: 'relative', height: '100%'}}>
- <div className={styles.tableContainer}>
-      <Table className={styles.table}>
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell>
-              <div className={styles.cellContent}>
-                <input 
-                  type="checkbox"
-                  checked={isAllSelected}
-                  ref={(input) => {
-                    if (input) {
-                      input.indeterminate = isIndeterminate;
-                    }
-                  }}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                />
-                <Document20Regular />
-                <Text weight="semibold">Name</Text>
-              </div>
-            </TableHeaderCell>
-            {TABLE_COLUMNS.slice(1).map(column => (
-              <TableHeaderCell key={column.key}>
-                <Text weight="semibold">{column.name}</Text>
-              </TableHeaderCell>
-            ))}
-            {showAccessControl && (
+      <div className={styles.tableContainer}>
+        <Table className={styles.table}>
+          <TableHeader>
+            <TableRow>
               <TableHeaderCell>
-                <Text weight="semibold">Lock</Text>
-              </TableHeaderCell>
-            )}
-            {showAdvancedColumns && (
-              <>
-                <TableHeaderCell>
-                  <Text weight="semibold">Permissions</Text>
-                </TableHeaderCell>
-                <TableHeaderCell>
-                  <Text weight="semibold">Version</Text>
-                </TableHeaderCell>
-              </>
-            )}
-            <TableHeaderCell >
-              <Text weight="semibold">More</Text>
-            </TableHeaderCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map(item => (
-            <TableRow 
-              key={item.key}
-              onContextMenu={(e) => handleContextMenu(e, item.key)}
-            >
-              <TableCell>
                 <div className={styles.cellContent}>
                   <input 
                     type="checkbox"
-                    checked={selectedItems.has(item.key)}
-                    onChange={(e) => handleSelectItem(item.key, e.target.checked)}
+                    checked={isAllSelected}
+                    ref={(input) => {
+                      if (input) {
+                        input.indeterminate = isIndeterminate;
+                      }
+                    }}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
                   />
-                  <DocumentBulletList20Regular />
-                  <Text 
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => onRowClick?.(item)}
-                  >
-                    {item.name}
-                  </Text>
+                  <Document20Regular />
+                  <Text weight="semibold">Name</Text>
                 </div>
-              </TableCell>
-              <TableCell>
-                <Text>{item.modified}</Text>
-              </TableCell>
-              <TableCell>
-                <Text>{item.createdBy}</Text>
-              </TableCell>
-              <TableCell>
-                <Text>{item.modifiedBy}</Text>
-              </TableCell>
-              <TableCell>
-                <Button
-                  appearance="transparent"
-                  icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
-                  onClick={(e) => handleFavoriteClick(e, item.key)}
-                  style={{ minWidth: 'auto', padding: '4px' }}
-                />
-              </TableCell>
-              <TableCell>
-                <Text>{item.status}</Text>
-              </TableCell>
+              </TableHeaderCell>
+              {(pageType === 'client' ? CLIENT_COLUMNS : TABLE_COLUMNS).slice(1).map(column => (
+                <TableHeaderCell key={column.key}>
+                  <Text weight="semibold">{column.name}</Text>
+                </TableHeaderCell>
+              ))}
               {showAccessControl && (
+                <TableHeaderCell>
+                  <Text weight="semibold">Lock</Text>
+                </TableHeaderCell>
+              )}
+              {showAdvancedColumns && (
+                <>
+                  <TableHeaderCell>
+                    <Text weight="semibold">Permissions</Text>
+                  </TableHeaderCell>
+                  <TableHeaderCell>
+                    <Text weight="semibold">Version</Text>
+                  </TableHeaderCell>
+                </>
+              )}
+              <TableHeaderCell >
+                <Text weight="semibold">More</Text>
+              </TableHeaderCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {items.map(item => (
+              <TableRow 
+                key={item.key}
+                onContextMenu={(e) => handleContextMenu(e, item.key)}
+              >
                 <TableCell>
-                  <Button
-                    appearance="transparent"
-                    icon={item.lock ? (
-                      <LockClosed20Regular 
+                  <div className={styles.cellContent}>
+                    <input 
+                      type="checkbox"
+                      checked={selectedItems.has(item.key)}
+                      onChange={(e) => handleSelectItem(item.key, e.target.checked)}
+                    />
+                    <DocumentBulletList20Regular />
+                    <Text 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => onRowClick?.(item)}
+                    >
+                      {item.name}
+                    </Text>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Text>{item.modified}</Text>
+                </TableCell>
+                {pageType === 'firm' && (
+                  <>
+                    <TableCell>
+                      <Text>{item.createdBy}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text>{item.modifiedBy}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        appearance="transparent"
+                        icon={isFavorite(item.key) ? <StarFilled style={{ color: '#FFD700' }} /> : <StarRegular />}
+                        onClick={(e) => handleFavoriteClick(e, item.key)}
+                        style={{ minWidth: 'auto', padding: '4px' }}
+                      />
+                    </TableCell>
+                  </>
+                )}
+                <TableCell>
+                  <Text>{item.status}</Text>
+                </TableCell>
+                {showAccessControl && (
+                  <TableCell>
+                    <Button
+                      appearance="transparent"
+                      icon={item.lock ? (
+                        <LockClosed20Regular 
                       // style={{ color: tokens.colorPaletteRedBackground3 }} 
                       />
                     ) : (
