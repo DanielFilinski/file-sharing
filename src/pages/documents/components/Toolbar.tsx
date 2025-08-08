@@ -26,6 +26,7 @@ import {
   MoreHorizontalRegular,
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
+import { UploadForm, DocumentMetadata } from './UploadForm';
 
 export const Toolbar: React.FC<{
   selectedCount: number,
@@ -34,7 +35,7 @@ export const Toolbar: React.FC<{
   setIsGridView: (v: boolean) => void,
   documentFilter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites',
   onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => void,
-  onUploadFiles: (files: FileList) => void,
+  onUploadFiles: (files: FileList, metadata?: DocumentMetadata) => void,
   showBulkActions?: boolean,
   showAdvancedFilters?: boolean,
   pageType?: 'firm' | 'client',
@@ -46,6 +47,7 @@ export const Toolbar: React.FC<{
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal'>(null);
+  const [uploadFormOpen, setUploadFormOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -59,7 +61,7 @@ export const Toolbar: React.FC<{
   }, []);
 
   const handleUploadFromDevice = () => {
-    fileInputRef.current?.click();
+    setUploadFormOpen(true);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +69,13 @@ export const Toolbar: React.FC<{
     if (files && files.length > 0) {
       onUploadFiles(files);
     }
+  };
+
+  const handleUploadWithMetadata = (files: File[], metadata: DocumentMetadata) => {
+    // Создаем FileList из массива файлов для совместимости
+    const dataTransfer = new DataTransfer();
+    files.forEach(file => dataTransfer.items.add(file));
+    onUploadFiles(dataTransfer.files, metadata);
   };
 
   const handleOpenCloud = () => setDialogOpen('cloud');
@@ -285,6 +294,13 @@ export const Toolbar: React.FC<{
             </DialogBody>
           </DialogSurface>
         </Dialog>
+      )}
+      {uploadFormOpen && (
+        <UploadForm
+          isOpen={uploadFormOpen}
+          onClose={() => setUploadFormOpen(false)}
+          onUpload={handleUploadWithMetadata}
+        />
       )}
     </div>
   );

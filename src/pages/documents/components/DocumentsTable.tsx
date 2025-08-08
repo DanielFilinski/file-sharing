@@ -25,6 +25,8 @@ const TABLE_COLUMNS = [
   { key: 'modified', name: 'Modified' },
   { key: 'createdBy', name: 'Created by' },
   { key: 'modifiedBy', name: 'Modified by' },
+  { key: 'documentType', name: 'Type' },
+  { key: 'period', name: 'Period' },
   { key: 'clientEmail', name: 'Client Email' },
   { key: 'favorite', name: 'Favorite' },
   { key: 'status', name: 'Status' }
@@ -212,6 +214,8 @@ export const DocumentsTable: React.FC<{
               <>
                 <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Created by: {item.createdBy}</div>
                 <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Modified by: {item.modifiedBy}</div>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Type: {item.documentType || '-'}</div>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Period: {item.period || '-'}</div>
                 <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Client: {item.clientEmail || '-'}</div>
               </>
             )}
@@ -305,6 +309,12 @@ export const DocumentsTable: React.FC<{
                     </TableCell>
                     <TableCell>
                       <Text>{item.modifiedBy}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text>{item.documentType || '-'}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text>{item.period || '-'}</Text>
                     </TableCell>
                     <TableCell>
                       <Text>{item.clientEmail || '-'}</Text>

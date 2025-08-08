@@ -99,6 +99,36 @@ export const DocumentDetailsDrawer: React.FC<DocumentDetailsDrawerProps> = ({
                 </span>
               </div>
             )}
+            {selectedDoc?.documentType && (
+              <div>
+                <Subtitle2>Document Type:</Subtitle2>
+                <Body2 style={{ marginLeft: 8 }}>{selectedDoc.documentType}</Body2>
+              </div>
+            )}
+            {selectedDoc?.documentSubtype && (
+              <div>
+                <Subtitle2>Document Subtype:</Subtitle2>
+                <Body2 style={{ marginLeft: 8 }}>{selectedDoc.documentSubtype}</Body2>
+              </div>
+            )}
+            {selectedDoc?.period && (
+              <div>
+                <Subtitle2>Period:</Subtitle2>
+                <Body2 style={{ marginLeft: 8 }}>{selectedDoc.period}</Body2>
+              </div>
+            )}
+            {selectedDoc?.startDate && selectedDoc?.endDate && (
+              <div>
+                <Subtitle2>Date Range:</Subtitle2>
+                <Body2 style={{ marginLeft: 8 }}>{selectedDoc.startDate} - {selectedDoc.endDate}</Body2>
+              </div>
+            )}
+            {selectedDoc?.description && (
+              <div>
+                <Subtitle2>Description:</Subtitle2>
+                <Body2 style={{ marginLeft: 8 }}>{selectedDoc.description}</Body2>
+              </div>
+            )}
             <div>
               <Subtitle2>Approved by:</Subtitle2>
               <span style={{ marginLeft: 8, color: '#888' }}><Body2>—</Body2></span>

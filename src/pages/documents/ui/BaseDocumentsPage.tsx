@@ -43,6 +43,12 @@ export interface Document {
   status: 'Active' | 'pending validation' | 'validation in process' | 'pending review' | 'Locked' | 'Access Closed';
   lock: boolean;
   clientEmail?: string; // Email клиента, который загрузил документ
+  documentType?: string; // Тип документа (tax, audit, consulting, etc.)
+  documentSubtype?: string; // Подтип документа (income tax, sales tax, etc.)
+  period?: string; // Период (quarter, year, specific dates)
+  startDate?: string; // Начальная дата для периода
+  endDate?: string; // Конечная дата для периода
+  description?: string; // Описание документа
 }
 
 export interface BaseDocumentsPageProps {
@@ -117,7 +123,14 @@ export default function BaseDocumentsPage({
     setSelectedItems(new Set());
   };
 
-  const handleUploadFiles = (files: FileList) => {
+  const handleUploadFiles = (files: FileList, metadata?: {
+    documentType: string;
+    documentSubtype: string;
+    period: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+  }) => {
     const newDocs = Array.from(files).map(file => ({
       key: (Math.random() * 100000).toFixed(0),
       name: file.name,
@@ -128,7 +141,13 @@ export default function BaseDocumentsPage({
       shared: false,
       status: 'pending validation' as const,
       lock: false,
-      clientEmail: 'client@example.com'
+      clientEmail: 'client@example.com',
+      documentType: metadata?.documentType,
+      documentSubtype: metadata?.documentSubtype,
+      period: metadata?.period,
+      startDate: metadata?.startDate,
+      endDate: metadata?.endDate,
+      description: metadata?.description
     }));
     setDocuments(prev => [...prev, ...newDocs]);
   };
