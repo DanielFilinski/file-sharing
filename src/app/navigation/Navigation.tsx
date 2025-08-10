@@ -218,6 +218,7 @@ const Navigation: React.FC<NavigationProps> = ({
     const path = location.pathname;
     if (path.includes('/client-side')) return 'dms';
     if (path.includes('/firm-side')) return 'portal';
+    if (path.includes('/firm-side-2')) return 'portal2';
     if (path.includes('/favorites')) return 'favorites';
     if (path.includes('/settings/organization')) return 'org';
     if (path.includes('/settings/storage')) return 'storage';
@@ -247,6 +248,9 @@ const Navigation: React.FC<NavigationProps> = ({
         break;
       case 'portal':
         navigate('/firm-side');
+        break;
+      case 'portal2':
+        navigate('/firm-side-2');
         break;
       case 'favorites':
         navigate('/favorites');

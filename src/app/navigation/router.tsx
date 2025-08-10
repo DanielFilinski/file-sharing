@@ -13,6 +13,7 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Leads } from '@/pages/leads/Leads';
 import FirmSidePage from '@/pages/documents/ui/FirmSidePage';
+import FirmSide2Page from '@/pages/documents/ui/FirmSide2Page';
 
 
 export const router = createBrowserRouter([
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: 'firm-side',
         element: <FirmSidePage/>,
+      },
+      {
+        path: 'firm-side-2',
+        element: <FirmSide2Page/>,
       },
       {
         path: 'favorites',

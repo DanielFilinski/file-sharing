@@ -45,6 +45,13 @@ export const NAV_LINKS: NavLink[] = [
     icon: 'Table'
   },
   {
+    name: 'Firm Side 2',
+    url: '#',
+    key: 'portal2',
+    linkName: '/firm-side-2',
+    icon: 'TableMultiple'
+  },
+  {
     name: 'Favorites',
     url: '#',
     key: 'favorites',
@@ -103,18 +110,19 @@ export const NAV_GROUPS: NavGroup[] = [
     links: [
       NAV_LINKS[0], // Client Side
       NAV_LINKS[1], // Firm Side
-      NAV_LINKS[2], // Favorites
-      NAV_LINKS[7], // Leads
+      NAV_LINKS[2], // Firm Side 2
+      NAV_LINKS[3], // Favorites
+      NAV_LINKS[8], // Leads
     ]
   },
   {
     title: 'Settings',
     links: [
-      NAV_LINKS[3], // Organization
-      NAV_LINKS[4], // Storage
-      NAV_LINKS[5], // Validation
-      NAV_LINKS[6], // Approval
-      NAV_LINKS[8], // Users
+      NAV_LINKS[4], // Organization
+      NAV_LINKS[5], // Storage
+      NAV_LINKS[6], // Validation
+      NAV_LINKS[7], // Approval
+      NAV_LINKS[9], // Users
     ]
   }
 ];
