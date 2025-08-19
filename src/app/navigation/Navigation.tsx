@@ -217,8 +217,8 @@ const Navigation: React.FC<NavigationProps> = ({
     // Determine selected item from current route
     const path = location.pathname;
     if (path.includes('/client-side')) return 'dms';
-    if (path.includes('/firm-side')) return 'portal';
     if (path.includes('/firm-side-2')) return 'portal2';
+    if (path.includes('/firm-side')) return 'portal';
     if (path.includes('/favorites')) return 'favorites';
     if (path.includes('/settings/organization')) return 'org';
     if (path.includes('/settings/storage')) return 'storage';

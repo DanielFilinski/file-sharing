@@ -45,7 +45,7 @@ export const NAV_LINKS: NavLink[] = [
     icon: 'Table'
   },
   {
-    name: 'Firm Side 2',
+    name: 'Analytics',
     url: '#',
     key: 'portal2',
     linkName: '/firm-side-2',
