@@ -1,108 +1,200 @@
-# Server-side code in applications
+# File Sharing API
 
-Azure Functions are a great way to add server-side behaviors to any application.
+Azure Functions API для системы обмена документами в MS Teams.
 
-## Prerequisites
+## Архитектура
 
-- [Node.js](https://nodejs.org/), supported versions: 18, 20, 22
-- A Microsoft 365 account. If you do not have Microsoft 365 account, apply one from [Microsoft 365 developer program](https://developer.microsoft.com/en-us/microsoft-365/dev-program)
-- [Microsoft 365 Agents Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) version 5.0.0 and higher or [Microsoft 365 Agents Toolkit CLI](https://aka.ms/teamsfx-toolkit-cli)
+- **Azure Functions v4** с TypeScript
+- **Cosmos DB** для хранения пользователей, документов и чатов
+- **Azure Blob Storage** для хранения файлов
+- **Azure Service Bus** для асинхронных уведомлений
+- **Azure SignalR** для реалтайм коммуникации
+- **Azure AD B2C** для аутентификации
 
-## Develop
+## Установка и запуск
 
-The Microsoft 365 Agents Toolkit IDE Extension and Microsoft 365 Agents Toolkit CLI provide template code for you to get started with Azure Functions for your application. Microsoft Teams Framework simplifies the task of establishing the user's identity within the Azure Functions.
+### Предварительные требования
 
-The template handles calls from your Teams "custom tab" (client-side of your app), initializes the TeamsFx SDK to access the current user context, and demonstrates how to obtain a pre-authenticated Microsoft Graph Client. Microsoft Graph is the "data plane" of Microsoft 365 - you can use it to access content within Microsoft 365 in your company. With it you can read and write documents, SharePoint collections, Teams channels, and many other entities within Microsoft 365. Read more about [Microsoft Graph](https://docs.microsoft.com/en-us/graph/overview).
+1. Node.js 18+ 
+2. Azure Functions Core Tools
+3. Azure CLI
+4. Локальные ресурсы Azure (для разработки)
 
-You can add your logic to the single Azure Functions created by this template, as well as add more functions as necessary. See [Azure Functions developer guide](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference) for more information.
+### Установка зависимостей
 
-### Call the Function
-
-To call your Azure Functions, the client sends an HTTP request with an SSO token in the `Authorization` header. Here is an example:
-
-```ts
-import { TeamsUserCredentialAuthConfig, TeamsUserCredential } from "@microsoft/teamsfx";
-
-const authConfig: TeamsUserCredentialAuthConfig = {
-  clientId: "YOUR_CLIENT_ID",
-  initiateLoginEndpoint: "YOUR_LOGIN_PAGE_URL",
-};
-const teamsUserCredential = new TeamsUserCredential(authConfig);
-const accessToken = await teamsUserCredential.getToken(""); // Get SSO token
-const endpoint = "https://YOUR_API_ENDPOINT";
-const response = await axios.default.get(endpoint + "/api/" + functionName, {
-  headers: {
-    Authorization: `Bearer ${accessToken.token}`,
-  },
-});
+```bash
+npm install
 ```
 
-### Add More Functions
+### Настройка переменных окружения
 
-- From Visual Studio Code, open the command palette, select `Microsoft 365 Agents: View How-to Guides` and select `Integrate with Azure Functions`.
+Скопируйте `local.settings.json` и заполните необходимые переменные:
 
-## Change Node.js runtime version
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "M365_CLIENT_ID": "your-app-client-id",
+    "M365_CLIENT_SECRET": "your-app-client-secret",
+    "M365_TENANT_ID": "your-tenant-id",
+    "M365_AUTHORITY_HOST": "https://login.microsoftonline.com",
+    "COSMOS_DB_ENDPOINT": "your-cosmos-db-endpoint",
+    "COSMOS_DB_KEY": "your-cosmos-db-key",
+    "COSMOS_DB_DATABASE_ID": "file-sharing-db",
+    "AZURE_STORAGE_CONNECTION_STRING": "your-storage-connection-string",
+    "BLOB_CONTAINER_NAME": "documents",
+    "SERVICE_BUS_CONNECTION_STRING": "your-service-bus-connection-string",
+    "SIGNALR_CONNECTION_STRING": "your-signalr-connection-string"
+  }
+}
+```
 
-By default, Microsoft 365 Agents Toolkit and Microsoft 365 Agents Toolkit CLI will provision an Azure functions app with function runtime version 3, and node runtime version 12. You can change the node version through Azure Portal.
+### Локальный запуск
 
-- Sign in to [Azure Portal](https://azure.microsoft.com/).
-- Find your application's resource group and Azure Functions app resource. The resource group name and the Azure functions app name are stored in your project configuration file `env.*.json`. You can find them by searching the key `AZURE_RESOURCE_GROUP_NAME` and `FUNCTION_APP_NAME` in that file.
-- After enter the home page of the Azure Functions app, you can find a navigation item called `Configuration` under `settings` group.
-- Click `Configuration`, you would see a list of settings. Then click `General settings` and update the `Node.js Version` value to `Node.js 18 LTS` or `Node.js 20 LTS` according to your requirement.
-- After Click `OK` button, don't forget to click `Save` button on the top of the page.
+```bash
+npm run dev
+```
 
-Then following requests sent to the Azure Functions app will be handled by new node runtime version.
+API будет доступен по адресу: `http://localhost:7071`
 
-## Debug
+## API Endpoints
 
-- From Visual Studio Code: Start debugging the project by hitting the `F5` key in Visual Studio Code. Alternatively use the `Run and Debug Activity Panel` in Visual Studio Code and click the `Start Debugging` green arrow button.
-- From Microsoft 365 Agents Toolkit CLI: Start debugging the project by executing the command `atk preview --local` in your project directory.
+### Аутентификация
+- `GET /api/getUserProfile` - Получить профиль пользователя
 
-## Edit the manifest
+### Пользователи
+- `GET /api/users` - Получить всех пользователей
+- `GET /api/users/{id}` - Получить пользователя по ID
+- `POST /api/users/employees` - Создать сотрудника
+- `POST /api/users/clients` - Создать клиента
+- `PUT /api/users/{id}` - Обновить пользователя
+- `DELETE /api/users/{id}` - Удалить пользователя
 
-You can find the app manifest in `./appPackage` folder. The folder contains one manifest file:
+### Отделы
+- `GET /api/departments` - Получить все отделы
+- `POST /api/departments` - Создать отдел
 
-- `manifest.json`: Manifest file for app running locally or running remotely (After deployed to Azure).
+### Документы
+- `GET /api/documents` - Получить все документы
+- `GET /api/documents/{id}` - Получить документ по ID
+- `POST /api/documents` - Создать документ
+- `POST /api/documents/{id}/upload` - Загрузить файл документа
+- `GET /api/documents/{id}/download` - Скачать файл документа
+- `POST /api/documents/approve` - Одобрить/отклонить документ
+- `GET /api/documents/status/{status}` - Получить документы по статусу
+- `GET /api/documents/user/{userId}` - Получить документы пользователя
+- `DELETE /api/documents/{id}` - Удалить документ
 
-This file contains template arguments with `${{...}}` statements which will be replaced at build time. You may add any extra properties or permissions you require to this file. See the [schema reference](https://docs.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema) for more information.
+### Чат
+- `GET /api/chat/{documentId}/messages` - Получить сообщения чата
+- `POST /api/chat/messages` - Отправить сообщение
+- `DELETE /api/chat/messages/{messageId}` - Удалить сообщение
+- `GET /api/chat/{documentId}/messages/recent` - Получить последние сообщения
 
-## Deploy to Azure
+### Уведомления
+- `POST /api/notifications/document-uploaded` - Уведомление о загрузке документа
+- `POST /api/notifications/document-approved` - Уведомление об одобрении документа
+- `POST /api/notifications/user-added` - Уведомление о добавлении пользователя
+- `GET /api/notifications/signalr-url` - Получить URL для SignalR
 
-Deploy your project to Azure by following these steps:
+## Развертывание в Azure
 
-| From Visual Studio Code                                                                                                                                                                                                                                                                                                                        | From Microsoft 365 Agents Toolkit CLI                                                                                                                          |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ul><li>Open Microsoft 365 Agents Toolkit, and sign into Azure by clicking the `Sign in to Azure` under the `ACCOUNTS` section from sidebar.</li> <li>After you signed in, select a subscription under your account.</li><li>Open the command palette and select: `Microsoft 365 Agents: Provision`.</li><li>Open the command palette and select: `Microsoft 365 Agents: Deploy`.</li></ul> | <ul> <li>Run command `atk auth login azure`.</li><li> Run command `atk provision`.</li> <li>Run command `atk deploy`. </li></ul> |
+### 1. Создание ресурсов Azure
 
-> Note: Provisioning and deployment may incur charges to your Azure Subscription.
+```bash
+# Создать группу ресурсов
+az group create --name file-sharing-rg --location eastus
 
-## Preview
+# Создать Storage Account
+az storage account create --name filesharingstorage --resource-group file-sharing-rg --location eastus --sku Standard_LRS
 
-Once the provisioning and deployment steps are finished, you can preview your app:
+# Создать Cosmos DB
+az cosmosdb create --name file-sharing-cosmos --resource-group file-sharing-rg --capabilities EnableServerless
 
-- From Visual Studio Code
+# Создать Service Bus
+az servicebus namespace create --name file-sharing-sb --resource-group file-sharing-rg --location eastus --sku Standard
 
-  1. Open the `Run and Debug Activity Panel`.
-  1. Select `Launch Remote (Edge)` or `Launch Remote (Chrome)` from the launch configuration drop-down.
-  1. Press the Play (green arrow) button to launch your app - now running remotely from Azure.
+# Создать SignalR
+az signalr create --name file-sharing-signalr --resource-group file-sharing-rg --location eastus --sku Standard_S1
+```
 
-- From Microsoft 365 Agents Toolkit CLI: execute `atk preview --remote` in your project directory to launch your application.
+### 2. Настройка Function App
 
-## Validate manifest file
+```bash
+# Создать Function App
+az functionapp create --name file-sharing-api --resource-group file-sharing-rg --consumption-plan-location eastus --runtime node --runtime-version 18 --functions-version 4 --storage-account filesharingstorage --os-type Linux
 
-To check that your manifest file is valid:
+# Настроить переменные окружения
+az functionapp config appsettings set --name file-sharing-api --resource-group file-sharing-rg --settings COSMOS_DB_ENDPOINT="your-cosmos-endpoint" COSMOS_DB_KEY="your-cosmos-key" AZURE_STORAGE_CONNECTION_STRING="your-storage-connection-string" SERVICE_BUS_CONNECTION_STRING="your-service-bus-connection-string" SIGNALR_CONNECTION_STRING="your-signalr-connection-string"
+```
 
-- From Visual Studio Code: open the command palette and select: `Microsoft 365 Agents: Validate Application`.
-- From Microsoft 365 Agents Toolkit CLI: run command `atk validate` in your project directory.
+### 3. Развертывание
 
-## Package
+```bash
+# Сборка проекта
+npm run build
 
-- From Visual Studio Code: open the command palette and select `Microsoft 365 Agents: Zip app package`.
-- Alternatively, from the command line run `atk package` in the project directory.
+# Развертывание
+func azure functionapp publish file-sharing-api
+```
 
-## Publish to Teams
+## Структура проекта
 
-Once deployed, you may want to distribute your application to your organization's internal app store in Teams. Your app will be submitted for admin approval.
+```
+api/
+├── src/
+│   ├── functions/          # Azure Functions
+│   │   ├── getUserProfile.ts
+│   │   ├── users.ts
+│   │   ├── documents.ts
+│   │   ├── chat.ts
+│   │   └── notifications.ts
+│   ├── services/           # Сервисы для работы с Azure
+│   │   ├── cosmosDb.ts
+│   │   ├── blobStorage.ts
+│   │   ├── serviceBus.ts
+│   │   └── signalR.ts
+│   ├── middleware/         # Middleware
+│   │   └── auth.ts
+│   ├── types/              # TypeScript типы
+│   │   └── index.ts
+│   └── config.ts           # Конфигурация
+├── package.json
+├── tsconfig.json
+└── local.settings.json
+```
 
-- From Visual Studio Code: open the command palette and select: `Microsoft 365 Agents: Publish`.
-- From Microsoft 365 Agents Toolkit CLI: run command `atk publish` in your project directory.
+## Безопасность
+
+- Все endpoints (кроме getUserProfile) требуют аутентификации
+- Используется Azure AD B2C для аутентификации
+- JWT токены валидируются в каждом запросе
+- CORS настроен для работы с MS Teams
+
+## Мониторинг
+
+- Application Insights автоматически включен
+- Логирование всех операций
+- Метрики производительности
+- Алерты на ошибки
+
+## Разработка
+
+### Добавление новой функции
+
+1. Создайте файл в `src/functions/`
+2. Экспортируйте функцию
+3. Зарегистрируйте HTTP триггер
+4. Добавьте аутентификацию если необходимо
+
+### Тестирование
+
+```bash
+# Запуск тестов
+npm test
+
+# Локальное тестирование
+curl -X GET http://localhost:7071/api/users
+```

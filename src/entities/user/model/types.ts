@@ -1,9 +1,11 @@
 export interface User {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email?: string;
   phone?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Employee extends User {
@@ -21,7 +23,9 @@ export interface Client extends User {
 }
 
 export interface Department {
-  id: number;
+  id: string;
   name: string;
   description?: string;
+  createdAt: string;
+  updatedAt: string;
 } 
