@@ -9,8 +9,4 @@ export interface Document {
   updatedAt: string;
   authorId: string;
   approverId?: string;
-  fileName?: string;
-  fileUrl?: string;
-  fileSize?: number;
-  mimeType?: string;
 } 

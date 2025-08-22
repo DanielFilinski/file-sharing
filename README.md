@@ -1,237 +1,59 @@
-# File Sharing MS Teams App
+# Overview of the React with Fluent UI template
 
-Приложение для обмена документами в Microsoft Teams с системой одобрения и реалтайм уведомлениями.
+This app showcases how to craft a visually appealing web page that can be embedded in Microsoft Teams, Outlook and the Microsoft 365 app with React and Fluent UI. The app also enhances the end-user experiences with built-in single sign-on and data from Microsoft Graph.
 
-## Архитектура
+This app has adopted [On-Behalf-Of flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow) to implement SSO, and uses Azure Functions as middle-tier service, and make authenticated requests to call Graph from Azure Functions.
 
-### Frontend
-- **React 18** с TypeScript
-- **Fluent UI** для интерфейса в стиле Microsoft
-- **React Router** для навигации
-- **Feature-Sliced Design** архитектура
+## Get started with the React with Fluent UI template
 
-### Backend
-- **Azure Functions v4** с TypeScript
-- **Cosmos DB** для хранения данных
-- **Azure Blob Storage** для файлов
-- **Azure Service Bus** для уведомлений
-- **Azure SignalR** для реалтайм коммуникации
-- **Azure AD B2C** для аутентификации
+> **Prerequisites**
+>
+> To run the command bot template in your local dev machine, you will need:
+>
+> - [Node.js](https://nodejs.org/), supported versions: 18, 20, 22
+> - A [Microsoft 365 account for development](https://docs.microsoft.com/microsoftteams/platform/toolkit/accounts)
+>   Please note that after you enrolled your developer tenant in Office 365 Target Release, it may take couple days for the enrollment to take effect.
+> - [Microsoft 365 Agents Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) version 5.0.0 and higher or [Microsoft 365 Agents Toolkit CLI](https://aka.ms/teamsfx-toolkit-cli)
 
-## Быстрый старт
+1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
+2. In the Account section, sign in with your [Microsoft 365 account](https://docs.microsoft.com/microsoftteams/platform/toolkit/accounts) if you haven't already.
+3. Press F5 to start debugging which launches your app in Teams using a web browser. Select `Debug in Teams (Edge)` or `Debug in Teams (Chrome)`.
+4. When Teams launches in the browser, select the Add button in the dialog to install your app to Teams.
 
-### Предварительные требования
+**Congratulations**! You are running an application that can now show a beautiful web page in Teams, Outlook and the Microsoft 365 app.
 
-1. **Node.js 18+**
-2. **Azure Functions Core Tools**
-3. **Azure CLI**
-4. **Teams Toolkit** (опционально)
+![Personal tab demo](https://github.com/OfficeDev/TeamsFx/assets/63089166/9599b53c-8f89-493f-9f7e-9edae1f9be54)
 
-### Установка
+## What's included in the template
 
-1. **Клонирование репозитория**
-```bash
-git clone <repository-url>
-cd file-sharing
-```
+| Folder       | Contents                                                                                                               |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `.vscode`    | VSCode files for debugging                                                                                             |
+| `appPackage` | Templates for the application manifest                                                                           |
+| `env`        | Environment files                                                                                                      |
+| `infra`      | Templates for provisioning Azure resources                                                                             |
+| `src`        | The source code for the frontend of the Tab application. Implemented with Fluent UI Framework.                         |
+| `api`        | The source code for the backend of the Tab application. Implemented single-sign-on with OBO flow using Azure Functions. |
 
-2. **Установка зависимостей**
-```bash
-# Frontend
-npm install
+The following are Microsoft 365 Agents Toolkit specific project files. You can [visit a complete guide on Github](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5-Guide#overview) to understand how Microsoft 365 Agents Toolkit works.
 
-# Backend
-cd api
-npm install
-cd ..
-```
+| File                 | Contents                                                                                                                                                                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `m365agents.yml`       | This is the main Microsoft 365 Agents Toolkit project file. The project file defines two primary things: Properties and configuration Stage definitions.                                                                                                               |
+| `m365agents.local.yml` | This overrides `m365agents.yml` with actions that enable local execution and debugging.                                                                                                                                                                   |
+| `aad.manifest.json`  | This file defines the configuration of Microsoft Entra app. This template will only provision [single tenant](https://learn.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps#who-can-sign-in-to-your-app) Microsoft Entra app. |
 
-3. **Настройка переменных окружения**
+## Extend the React with Fluent UI template
 
-Создайте файл `.env` в корне проекта:
-```env
-REACT_APP_API_URL=http://localhost:7071/api
-```
+Following documentation will help you to extend the React with Fluent UI template.
 
-Настройте `api/local.settings.json`:
-```json
-{
-  "IsEncrypted": false,
-  "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "node",
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "M365_CLIENT_ID": "your-app-client-id",
-    "M365_CLIENT_SECRET": "your-app-client-secret",
-    "M365_TENANT_ID": "your-tenant-id",
-    "M365_AUTHORITY_HOST": "https://login.microsoftonline.com",
-    "COSMOS_DB_ENDPOINT": "your-cosmos-endpoint",
-    "COSMOS_DB_KEY": "your-cosmos-key",
-    "AZURE_STORAGE_CONNECTION_STRING": "your-storage-connection-string",
-    "SERVICE_BUS_CONNECTION_STRING": "your-service-bus-connection-string",
-    "SIGNALR_CONNECTION_STRING": "your-signalr-connection-string"
-  }
-}
-```
-
-### Запуск
-
-1. **Запуск API**
-```bash
-cd api
-npm run dev
-```
-
-2. **Запуск Frontend**
-```bash
-npm run dev
-```
-
-Приложение будет доступно по адресу: `http://localhost:5173`
-
-## Функциональность
-
-### Управление пользователями
-- ✅ Создание сотрудников и клиентов
-- ✅ Управление отделами
-- ✅ Роли и классификации
-
-### Управление документами
-- ✅ Загрузка и скачивание файлов
-- ✅ Система одобрения документов
-- ✅ Статусы документов (черновик, на рассмотрении, одобрен, отклонен)
-- ✅ Поиск и фильтрация
-
-### Чат документов
-- ✅ Реалтайм обсуждение документов
-- ✅ История сообщений
-- ✅ Удаление сообщений
-
-### Уведомления
-- ✅ Реалтайм уведомления через SignalR
-- ✅ Уведомления о загрузке документов
-- ✅ Уведомления об одобрении/отклонении
-- ✅ Уведомления о новых пользователях
-
-### Безопасность
-- ✅ Аутентификация через Azure AD
-- ✅ Авторизация на основе ролей
-- ✅ Валидация JWT токенов
-
-## API Endpoints
-
-### Аутентификация
-- `GET /api/getUserProfile` - Профиль пользователя
-
-### Пользователи
-- `GET /api/users` - Список пользователей
-- `POST /api/users/employees` - Создать сотрудника
-- `POST /api/users/clients` - Создать клиента
-- `PUT /api/users/{id}` - Обновить пользователя
-- `DELETE /api/users/{id}` - Удалить пользователя
-
-### Документы
-- `GET /api/documents` - Список документов
-- `POST /api/documents` - Создать документ
-- `POST /api/documents/{id}/upload` - Загрузить файл
-- `GET /api/documents/{id}/download` - Скачать файл
-- `POST /api/documents/approve` - Одобрить/отклонить
-
-### Чат
-- `GET /api/chat/{documentId}/messages` - Сообщения чата
-- `POST /api/chat/messages` - Отправить сообщение
-
-### Уведомления
-- `POST /api/notifications/document-uploaded` - Уведомление о загрузке
-- `POST /api/notifications/document-approved` - Уведомление об одобрении
-- `GET /api/notifications/signalr-url` - URL для SignalR
-
-## Развертывание в Azure
-
-### 1. Создание ресурсов
-
-```bash
-# Группа ресурсов
-az group create --name file-sharing-rg --location eastus
-
-# Storage Account
-az storage account create --name filesharingstorage --resource-group file-sharing-rg --location eastus --sku Standard_LRS
-
-# Cosmos DB
-az cosmosdb create --name file-sharing-cosmos --resource-group file-sharing-rg --capabilities EnableServerless
-
-# Service Bus
-az servicebus namespace create --name file-sharing-sb --resource-group file-sharing-rg --location eastus --sku Standard
-
-# SignalR
-az signalr create --name file-sharing-signalr --resource-group file-sharing-rg --location eastus --sku Standard_S1
-
-# Function App
-az functionapp create --name file-sharing-api --resource-group file-sharing-rg --consumption-plan-location eastus --runtime node --runtime-version 18 --functions-version 4 --storage-account filesharingstorage --os-type Linux
-```
-
-### 2. Настройка переменных окружения
-
-```bash
-az functionapp config appsettings set --name file-sharing-api --resource-group file-sharing-rg --settings COSMOS_DB_ENDPOINT="your-cosmos-endpoint" COSMOS_DB_KEY="your-cosmos-key" AZURE_STORAGE_CONNECTION_STRING="your-storage-connection-string" SERVICE_BUS_CONNECTION_STRING="your-service-bus-connection-string" SIGNALR_CONNECTION_STRING="your-signalr-connection-string"
-```
-
-### 3. Развертывание
-
-```bash
-# Backend
-cd api
-npm run build
-func azure functionapp publish file-sharing-api
-
-# Frontend
-npm run build
-# Развернуть в Azure Static Web Apps или другой хостинг
-```
-
-## Разработка
-
-### Структура проекта
-
-```
-file-sharing/
-├── api/                    # Azure Functions Backend
-│   ├── src/
-│   │   ├── functions/      # HTTP триггеры
-│   │   ├── services/       # Сервисы Azure
-│   │   ├── middleware/     # Middleware
-│   │   └── types/          # TypeScript типы
-│   └── package.json
-├── src/
-│   ├── entities/           # Бизнес-сущности
-│   ├── features/           # Функциональные модули
-│   ├── pages/              # Страницы приложения
-│   ├── components/         # UI компоненты
-│   └── shared/             # Общие утилиты
-└── package.json
-```
-
-### Добавление новой функции
-
-1. Создайте функцию в `api/src/functions/`
-2. Добавьте соответствующий хук в `src/entities/`
-3. Создайте UI компоненты
-4. Добавьте страницу в `src/pages/`
-
-### Тестирование
-
-```bash
-# Backend тесты
-cd api
-npm test
-
-# Frontend тесты
-npm test
-```
-
-## Лицензия
-
-MIT License
-
-## Поддержка
-
-Для вопросов и поддержки создайте issue в репозитории.
+- [Add or manage the environment](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-multi-env)
+- [Create multi-capability app](https://learn.microsoft.com/microsoftteams/platform/toolkit/add-capability)
+- [Use an existing Microsoft Entra application](https://learn.microsoft.com/microsoftteams/platform/toolkit/use-existing-aad-app)
+- [Customize the app manifest](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-preview-and-customize-app-manifest)
+- Host your app in Azure by [provision cloud resources](https://learn.microsoft.com/microsoftteams/platform/toolkit/provision) and [deploy the code to cloud](https://learn.microsoft.com/microsoftteams/platform/toolkit/deploy)
+- [Collaborate on app development](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-collaboration)
+- [Set up the CI/CD pipeline](https://learn.microsoft.com/microsoftteams/platform/toolkit/use-cicd-template)
+- [Publish the app to your organization or the Microsoft app store](https://learn.microsoft.com/microsoftteams/platform/toolkit/publish)
+- [Enable the app for multi-tenant](https://github.com/OfficeDev/TeamsFx/wiki/Multi-tenancy-Support-for-Azure-AD-app)
+- [Preview the app on mobile clients](https://aka.ms/teamsfx-mobile)
