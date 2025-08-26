@@ -59,7 +59,7 @@ export class ErrorHandler {
   }
 
   // Обработка ошибок аутентификации
-  private async handleAuthError(error: any): Promise<void> {
+  private async handleAuthError(_: any): Promise<void> {
     console.warn('Authentication error detected, attempting to refresh token...');
     
     try {
@@ -76,15 +76,19 @@ export class ErrorHandler {
       console.error('Token refresh failed:', refreshError);
     }
 
-    // Если не удалось обновить токен, перенаправляем на логин
-    notificationService.error(
-      'Ошибка авторизации',
-      'Необходимо войти в систему заново'
-    );
+    // Если обновление не удалось, пробуем интерактивный вход
+    try {
+      await authService.login();
+      notificationService.info('Выполнен вход', 'Сессия восстановлена после 401/403');
+      return;
+    } catch (loginError) {
+      console.error('Interactive login failed:', loginError);
+    }
 
+    // Если и логин не удался — разлогиниваем и уведомляем
+    notificationService.error('Ошибка авторизации', 'Необходимо войти в систему заново');
     try {
       await authService.logout();
-      // Здесь можно добавить логику перенаправления на страницу логина
     } catch (logoutError) {
       console.error('Logout failed:', logoutError);
     }
@@ -92,7 +96,7 @@ export class ErrorHandler {
 
   // Обработка сетевых ошибок
   private async handleNetworkError(
-    error: any,
+    _error: any,
     options: { retry: boolean; maxRetries: number; retryDelay: number }
   ): Promise<void> {
     if (options.retry && this.retryCount < options.maxRetries) {
@@ -117,7 +121,7 @@ export class ErrorHandler {
   }
 
   // Обработка серверных ошибок
-  private async handleServerError(error: any): Promise<void> {
+  private async handleServerError(_error: any): Promise<void> {
     notificationService.error(
       'Ошибка сервера',
       'Сервер временно недоступен. Попробуйте позже.'

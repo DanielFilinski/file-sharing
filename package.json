@@ -40,7 +40,9 @@
         "env-cmd": "^10.1.0",
         "typescript": "^4.1.2",
         "vite": "^5.4.2",
-        "vite-tsconfig-paths": "^5.1.4"
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^1.6.0",
+        "jsdom": "^24.1.0"
     },
     "scripts": {
         "dev:teamsfx": "concurrently \"npm run dev-tab:teamsfx\" \"npm run dev-api:teamsfx\"",
@@ -48,7 +50,7 @@
         "dev-api:teamsfx": "cd api && npm run dev:teamsfx",
         "start": "vite",
         "build": "tsc && vite build",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "vitest run --environment=jsdom",
         "serve": "vite preview"
     },
     "eslintConfig": {

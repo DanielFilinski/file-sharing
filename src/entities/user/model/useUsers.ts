@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { apiClient } from '@/shared/api';
+import { notificationService } from '@/shared/lib/notifications';
 import type { Employee, Client, Department } from './types';
 
 export const useUsers = () => {
@@ -20,35 +22,113 @@ export const useUsers = () => {
     { id: 4, name: 'HR', description: 'Human Resources department' }
   ]);
 
-  const addEmployee = (employee: Omit<Employee, 'id'>) => {
-    const newEmployee = { ...employee, id: Math.max(...employees.map(e => e.id)) + 1 };
-    setEmployees(prev => [...prev, newEmployee]);
+  const nextId = useMemo(() => ({
+    employee: () => (employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1),
+    client: () => (clients.length ? Math.max(...clients.map(c => c.id)) + 1 : 1),
+    department: () => (departments.length ? Math.max(...departments.map(d => d.id)) + 1 : 1),
+  }), [employees, clients, departments]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadAll = async () => {
+      try {
+        const [empRes, cliRes, depRes] = await Promise.all([
+          apiClient.get<Employee[]>('/users/employees').catch(() => null),
+          apiClient.get<Client[]>('/users/clients').catch(() => null),
+          apiClient.get<Department[]>('/users/departments').catch(() => null),
+        ]);
+
+        if (!mounted) return;
+
+        if (empRes?.data) setEmployees(empRes.data);
+        if (cliRes?.data) setClients(cliRes.data);
+        if (depRes?.data) setDepartments(depRes.data);
+      } catch (error) {
+        // Тихий фолбэк на мок
+        notificationService.info('Оффлайн режим', 'Используются локальные данные пользователей');
+      }
+    };
+
+    loadAll();
+    return () => { mounted = false; };
+  }, []);
+
+  const addEmployee = async (employee: Omit<Employee, 'id'>) => {
+    const optimistic = { ...employee, id: nextId.employee() };
+    setEmployees(prev => [...prev, optimistic]);
+    try {
+      await apiClient.post<Employee>('/users/employees', employee);
+    } catch (error) {
+      setEmployees(prev => prev.filter(e => e.id !== optimistic.id));
+      notificationService.showApiError(error, 'Не удалось добавить сотрудника');
+    }
   };
 
-  const updateEmployee = (id: number, updates: Partial<Employee>) => {
+  const updateEmployee = async (id: number, updates: Partial<Employee>) => {
+    const prevSnapshot = employees;
     setEmployees(prev => prev.map(emp => emp.id === id ? { ...emp, ...updates } : emp));
+    try {
+      await apiClient.put<Employee>(`/users/employees/${id}`, updates);
+    } catch (error) {
+      setEmployees(prevSnapshot);
+      notificationService.showApiError(error, 'Не удалось обновить сотрудника');
+    }
   };
 
-  const deleteEmployee = (id: number) => {
+  const deleteEmployee = async (id: number) => {
+    const prevSnapshot = employees;
     setEmployees(prev => prev.filter(emp => emp.id !== id));
+    try {
+      await apiClient.delete<void>(`/users/employees/${id}`);
+    } catch (error) {
+      setEmployees(prevSnapshot);
+      notificationService.showApiError(error, 'Не удалось удалить сотрудника');
+    }
   };
 
-  const addClient = (client: Omit<Client, 'id'>) => {
-    const newClient = { ...client, id: Math.max(...clients.map(c => c.id)) + 1 };
-    setClients(prev => [...prev, newClient]);
+  const addClient = async (client: Omit<Client, 'id'>) => {
+    const optimistic = { ...client, id: nextId.client() };
+    setClients(prev => [...prev, optimistic]);
+    try {
+      await apiClient.post<Client>('/users/clients', client);
+    } catch (error) {
+      setClients(prev => prev.filter(c => c.id !== optimistic.id));
+      notificationService.showApiError(error, 'Не удалось добавить клиента');
+    }
   };
 
-  const updateClient = (id: number, updates: Partial<Client>) => {
+  const updateClient = async (id: number, updates: Partial<Client>) => {
+    const prevSnapshot = clients;
     setClients(prev => prev.map(client => client.id === id ? { ...client, ...updates } : client));
+    try {
+      await apiClient.put<Client>(`/users/clients/${id}`, updates);
+    } catch (error) {
+      setClients(prevSnapshot);
+      notificationService.showApiError(error, 'Не удалось обновить клиента');
+    }
   };
 
-  const deleteClient = (id: number) => {
+  const deleteClient = async (id: number) => {
+    const prevSnapshot = clients;
     setClients(prev => prev.filter(client => client.id !== id));
+    try {
+      await apiClient.delete<void>(`/users/clients/${id}`);
+    } catch (error) {
+      setClients(prevSnapshot);
+      notificationService.showApiError(error, 'Не удалось удалить клиента');
+    }
   };
 
-  const addDepartment = (department: Omit<Department, 'id'>) => {
-    const newDepartment = { ...department, id: Math.max(...departments.map(d => d.id)) + 1 };
-    setDepartments(prev => [...prev, newDepartment]);
+  const addDepartment = async (department: Omit<Department, 'id'>) => {
+    const optimistic = { ...department, id: nextId.department() };
+    setDepartments(prev => [...prev, optimistic]);
+    try {
+      await apiClient.post<Department>('/users/departments', department);
+    } catch (error) {
+      setDepartments(prev => prev.filter(d => d.id !== optimistic.id));
+      notificationService.showApiError(error, 'Не удалось добавить отдел');
+    }
   };
 
   return {

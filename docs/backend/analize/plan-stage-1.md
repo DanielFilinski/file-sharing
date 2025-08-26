@@ -1,6 +1,6 @@
 ## Этап 1 — Базовая инфраструктура API
 
-Статус: 0% выполнено
+Статус: 100% выполнено
 
 ### Компоненты и страницы:
 - **API клиент:** `/src/shared/api/client.ts`, `/src/shared/api/index.ts`
@@ -9,11 +9,18 @@
 - **Обработка ошибок:** глобальные обработчики, retry логика
 - **Все страницы:** интеграция с API клиентом и аутентификацией
 
-- [ ] Создать базовый класс `ApiClient` с методами GET/POST/PUT/DELETE
-- [ ] Реализовать обработку ошибок и статусов HTTP, retry
-- [ ] Добавить загрузку файлов с прогрессом
-- [ ] Настроить аутентификацию (Teams/SSO) и обновление токена
-- [ ] Система уведомлений (`NotificationService` + `useNotifications`)
+- [✔] Создать базовый класс `ApiClient` с методами GET/POST/PUT/DELETE
+- [✔] Реализовать обработку ошибок и статусов HTTP, retry
+- [✔] Добавить загрузку файлов с прогрессом
+- [✔] Настроить аутентификацию (Teams/SSO) и обновление токена
+- [✔] Система уведомлений (`NotificationService` + `useNotifications`)
+- [✔] Инициализировать аутентификацию при старте приложения (`authService.initialize()` + login флоу) в корневом провайдере, чтобы `apiClient.setToken(...)` срабатывал до первых запросов
+- [✔] Подключить глобальные обработчики ошибок (`errorHandler.setupGlobalErrorHandling()`) один раз при старте
+- [✔] Смонтировать контейнер уведомлений в корневом layout (`NotificationContainer`) и проверить подписку
+- [✔] Перевести моковые хуки на `apiClient` (минимум: `src/entities/user/model/useUsers.ts`, `src/entities/storage/model/useStorageSettings.ts`)
+- [✔] Настроить поведение при 401/403: вызывать `authService.login()`/редирект, согласовать с роутингом
+- [✔] Добавить базовые unit-тесты для `ApiClient` и `errorHandler`
+- [✔] Документировать переменные окружения (`VITE_API_BASE_URL`, `VITE_CLIENT_ID`, `VITE_API_SCOPE`, `VITE_START_LOGIN_PAGE_URL`, `VITE_API_ENDPOINT`) и порядок загрузки
 
 ### 2.1 Этап 1: Создание API клиента
 

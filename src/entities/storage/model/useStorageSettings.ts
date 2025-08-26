@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { apiClient } from '@/shared/api';
+import { notificationService } from '@/shared/lib/notifications';
 import { Template, PreviewStructure, StorageSettings, StorageSettingsActions } from './types';
 
 const defaultTemplates: Record<string, Template> = {
@@ -140,22 +142,46 @@ export const useStorageSettings = (): StorageSettings & StorageSettingsActions =
     }
   };
 
-  const handleVerifyCredentials = () => {
-    if (sharePointEmail && sharePointPassword) {
-      setConnectionStatus('verifying');
-      setTimeout(() => {
-        setConnectionStatus('established');
-      }, 1500);
-    } else {
+  const handleVerifyCredentials = async () => {
+    if (!sharePointEmail || !sharePointPassword) {
       setConnectionStatus('invalid');
+      return;
+    }
+
+    setConnectionStatus('verifying');
+    try {
+      const res = await apiClient.post<{ status: 'ok' | 'fail' }>(
+        '/storage/verify-credentials',
+        { email: sharePointEmail, password: sharePointPassword }
+      );
+      if (res.data.status === 'ok') {
+        setConnectionStatus('established');
+        notificationService.success('Подключено', 'Доступ к SharePoint проверен');
+      } else {
+        setConnectionStatus('invalid');
+        notificationService.error('Ошибка доступа', 'Неверные учетные данные');
+      }
+    } catch (error) {
+      setConnectionStatus('invalid');
+      notificationService.showApiError(error, 'Ошибка проверки доступа');
     }
   };
 
-  const handleStorageAllocation = () => {
+  const handleStorageAllocation = async () => {
     const amount = parseInt(storageAmount);
-    if (amount > 1000) {
-      // Можно добавить callback для показа модального окна
-      console.warn('Not enough space');
+    if (Number.isNaN(amount) || amount <= 0) {
+      notificationService.warning('Некорректный объем', 'Укажите положительное число');
+      return;
+    }
+
+    try {
+      await apiClient.post('/storage/allocate', {
+        amount,
+        unit: storageUnit,
+      });
+      notificationService.success('Распределено', `Выделено ${amount} ${storageUnit}`);
+    } catch (error) {
+      notificationService.showApiError(error, 'Не удалось распределить хранилище');
     }
   };
 

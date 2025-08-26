@@ -41,6 +41,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           'Добро пожаловать',
           `Вы вошли как ${user.displayName}`
         );
+      } else {
+        // Пытаемся залогиниться и повторно получить пользователя
+        try {
+          await authService.login();
+          const afterLoginUser = await authService.getUserInfo();
+          if (afterLoginUser) {
+            setCurrentUser(afterLoginUser);
+            setIsAuthenticated(true);
+            notificationService.success(
+              'Добро пожаловать',
+              `Вы вошли как ${afterLoginUser.displayName}`
+            );
+          }
+        } catch (loginError) {
+          notificationService.error('Требуется вход', 'Войдите, чтобы продолжить работу');
+        }
       }
 
       setIsInitialized(true);

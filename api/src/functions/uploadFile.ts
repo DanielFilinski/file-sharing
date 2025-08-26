@@ -49,9 +49,19 @@ export async function uploadFile(
   try {
     // Получаем файл из запроса
     const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const fileEntry = formData.get("file");
 
-    if (!file) {
+    // Приводим к типу загруженного файла в Node (undici), без DOM-специфики
+    type UploadedFile = {
+      name: string;
+      type: string;
+      size: number;
+      arrayBuffer: () => Promise<ArrayBuffer>;
+    };
+
+    const file = fileEntry as unknown as UploadedFile;
+
+    if (!file || typeof file.name !== 'string' || typeof file.size !== 'number') {
       return {
         status: 400,
         body: JSON.stringify({ error: "No file provided" }),
