@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Toolbar } from '../components/Toolbar';
 import { DocumentsTable } from '../components/DocumentsTable';
 import { DocumentDetailsDrawer } from '../components/DocumentDetailsDrawer';
 import { useFavorites } from '@/features/favorites';
+import { useDocuments } from '@/entities/document';
 import { useLocation } from 'react-router-dom';
 
 
@@ -79,15 +80,15 @@ export default function BaseDocumentsPage({
     return 'firm';
   };
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [documents, setDocuments] = useState<Document[]>(initialDocuments.length > 0 ? initialDocuments : [
-    { key: '1', name: 'Project Proposal.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active', lock: false, clientEmail: 'john.smith@company.com' },
-    { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'pending validation', lock: false, clientEmail: 'alice.johnson@client.com' },
-    { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'validation in process', lock: false, clientEmail: 'mike.brown@enterprise.com' },
-    { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark', owner: 'other', shared: true, status: 'pending review', lock: false, clientEmail: 'emma.wilson@partners.com' },
-    { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'Active', lock: false, clientEmail: 'lisa.anderson@design.com' },
-    { key: '6', name: 'Contract Agreement.pdf', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'other', shared: true, status: 'pending validation', lock: false, clientEmail: 'contract@legal.com' },
-    { key: '7', name: 'Financial Report.xlsx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee', owner: 'me', shared: false, status: 'validation in process', lock: false, clientEmail: 'finance@accounting.com' },
-  ]);
+  const {
+    documents,
+    fetchDocuments,
+    uploadFiles,
+    lockDocument,
+    unlockDocument,
+    moveToClientSide,
+    moveToFirmSide
+  } = useDocuments();
   const [isGridView, setIsGridView] = useState(false);
   const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites'>('All Documents');
   const [statusFilter, setStatusFilter] = useState<string>('All');
@@ -95,32 +96,14 @@ export default function BaseDocumentsPage({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleAddItem = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
-    const ext = {
-      document: 'docx',
-      spreadsheet: 'xlsx',
-      presentation: 'pptx',
-      form: 'form'
-    }[type] || 'docx';
-    setDocuments(prev => [
-      ...prev,
-      {
-        key: (Math.random() * 100000).toFixed(0),
-        name: `New ${type.charAt(0).toUpperCase() + type.slice(1)}.${ext}`,
-        modified: 'just now',
-        createdBy: 'You',
-        modifiedBy: 'You',
-        owner: 'me',
-        shared: false,
-        status: 'Active' as const,
-        lock: false,
-        clientEmail: 'user@example.com'
-      }
-    ]);
+    // Опционально: можно открыть модал создания; пока опускаем
   };
 
   const handleFilterChange = (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => {
     setDocumentFilter(filter);
     setSelectedItems(new Set());
+    const owner = filter === 'My Documents' ? 'me' : filter === 'Shared Documents' ? 'other' : 'all';
+    fetchDocuments({ ...{}, owner });
   };
 
   const handleUploadFiles = (files: FileList, metadata?: {
@@ -131,41 +114,21 @@ export default function BaseDocumentsPage({
     endDate?: string;
     description?: string;
   }) => {
-    const newDocs = Array.from(files).map(file => ({
-      key: (Math.random() * 100000).toFixed(0),
-      name: file.name,
-      modified: 'just now',
-      createdBy: 'You',
-      modifiedBy: 'You',
-      owner: 'me' as const,
-      shared: false,
-      status: 'pending validation' as const,
-      lock: false,
-      clientEmail: 'client@example.com',
-      documentType: metadata?.documentType,
-      documentSubtype: metadata?.documentSubtype,
-      period: metadata?.period,
-      startDate: metadata?.startDate,
-      endDate: metadata?.endDate,
-      description: metadata?.description
-    }));
-    setDocuments(prev => [...prev, ...newDocs]);
+    uploadFiles(Array.from(files), metadata);
   };
 
   const handleCloseAccess = (documentKey: string) => {
-    setDocuments(prev => prev.map(doc => 
-      doc.key === documentKey 
-        ? { ...doc, shared: false, status: 'Access Closed' as const, lock: false }
-        : doc
-    ));
+    // Можно обновить статус документа, если потребуется отдельный флаг доступа
   };
 
   const handleToggleLock = (documentKey: string) => {
-    setDocuments(prev => prev.map(doc => 
-      doc.key === documentKey 
-        ? { ...doc, lock: !doc.lock }
-        : doc
-    ));
+    const doc = documents.find(d => (d.id === documentKey || (d as any).key === documentKey));
+    if (!doc) return;
+    if ((doc as any).lock || doc.status === 'Locked') {
+      unlockDocument(doc.id);
+    } else {
+      lockDocument(doc.id);
+    }
   };
 
   const handleRowClick = (doc: Document) => {
@@ -178,13 +141,30 @@ export default function BaseDocumentsPage({
     // setSelectedDoc(null);
   };
 
-  let filteredDocuments = documents;
-  if (documentFilter === 'My Documents') filteredDocuments = documents.filter(d => d.owner === 'me');
-  if (documentFilter === 'Shared Documents') filteredDocuments = documents.filter(d => d.shared);
-  if (documentFilter === 'Recent') filteredDocuments = documents.slice(-3);
+  let filteredDocuments = documents.map(d => ({
+    key: (d as any).key ?? d.id,
+    name: d.name,
+    modified: (d as any).modified ?? '',
+    createdBy: (d as any).createdBy ?? '',
+    modifiedBy: (d as any).modifiedBy ?? '',
+    owner: ((d as any).owner ?? 'me') as any,
+    shared: Boolean((d as any).shared),
+    status: (d.status as any) ?? 'Active',
+    lock: Boolean((d as any).lock),
+    clientEmail: (d as any).clientEmail,
+    documentType: (d as any).documentType,
+    documentSubtype: (d as any).documentSubtype,
+    period: (d as any).period,
+    startDate: (d as any).startDate,
+    endDate: (d as any).endDate,
+    description: (d as any).description,
+  } as Document));
+  if (documentFilter === 'My Documents') filteredDocuments = filteredDocuments.filter(d => d.owner === 'me');
+  if (documentFilter === 'Shared Documents') filteredDocuments = filteredDocuments.filter(d => d.shared);
+  if (documentFilter === 'Recent') filteredDocuments = filteredDocuments.slice(-3);
   if (documentFilter === 'Favorites') {
     const favoriteKeys = getFavorites();
-    filteredDocuments = documents.filter(d => favoriteKeys.includes(d.key));
+    filteredDocuments = filteredDocuments.filter(d => favoriteKeys.includes(d.key));
   }
   
   // Фильтрация по статусу
@@ -198,6 +178,7 @@ export default function BaseDocumentsPage({
     } else {
       setDocumentFilter('All Documents');
     }
+    fetchDocuments();
   }, [location.pathname]);
 
   return (
@@ -225,6 +206,44 @@ export default function BaseDocumentsPage({
           showAccessControl={showAccessControl}
           onCloseAccess={handleCloseAccess}
           onToggleLock={handleToggleLock}
+          onDelete={(key) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (doc) {
+              // маппинг id
+              // @ts-ignore
+              import('@/entities/document').then(({ documentsApi }) => documentsApi.deleteDocument(doc.id)).catch(() => {});
+            }
+          }}
+          onMoveToClient={(key) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (doc) moveToClientSide(doc.id);
+          }}
+          onMoveToFirm={(key) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (doc) moveToFirmSide(doc.id);
+          }}
+          onPreview={(key) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (!doc) return;
+            // @ts-ignore
+            import('@/entities/document').then(({ documentsApi }) => documentsApi.previewFile(doc.id)).then(url => {
+              if (url) window.open(url, '_blank');
+            }).catch(() => {});
+          }}
+          onDownload={(key) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (!doc) return;
+            // Пытаемся скачать через blobUrl
+            const url = (doc as any).blobUrl;
+            if (url) {
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = doc.name;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+            }
+          }}
           pageType={getPageType()}
           onRowClick={handleRowClick}
           {...customTableProps}

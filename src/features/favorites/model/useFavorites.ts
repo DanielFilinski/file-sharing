@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { favoritesApi } from '@/entities/document/api/favoritesApi';
 
 // Глобальное состояние для избранного
 let globalFavorites = new Set<string>();
@@ -42,11 +43,15 @@ export const useFavorites = () => {
     };
   }, []);
 
-  const toggleFavorite = (documentKey: string) => {
+  const toggleFavorite = async (documentKey: string) => {
+    // Опционально: можно получить реального userId из auth
+    const userId = 'me';
     if (globalFavorites.has(documentKey)) {
       globalFavorites.delete(documentKey);
+      try { await favoritesApi.removeFromFavorites(userId, documentKey); } catch {}
     } else {
       globalFavorites.add(documentKey);
+      try { await favoritesApi.addToFavorites(userId, documentKey); } catch {}
     }
     saveFavorites(globalFavorites);
     notifyListeners();

@@ -67,6 +67,11 @@ export const DocumentsTable: React.FC<{
   showAccessControl?: boolean,
   onCloseAccess?: (documentKey: string) => void,
   onToggleLock?: (documentKey: string) => void,
+  onDelete?: (documentKey: string) => void,
+  onMoveToClient?: (documentKey: string) => void,
+  onMoveToFirm?: (documentKey: string) => void,
+  onPreview?: (documentKey: string) => void,
+  onDownload?: (documentKey: string) => void,
   showBulkSelection?: boolean,
   showAdvancedColumns?: boolean,
   pageType?: 'firm' | 'client',
@@ -79,6 +84,11 @@ export const DocumentsTable: React.FC<{
   showAccessControl = false,
   onCloseAccess,
   onToggleLock,
+  onDelete,
+  onMoveToClient,
+  onMoveToFirm,
+  onPreview,
+  onDownload,
   showBulkSelection = false,
   showAdvancedColumns = false,
   pageType = 'firm',
@@ -90,20 +100,20 @@ export const DocumentsTable: React.FC<{
 
   const getMenuItems = (itemKey: string) => {
     const baseItems = [
-      { key: 'copy', label: 'Copy', action: () => console.log('Copy document', itemKey) },
-      { key: 'delete', label: 'Delete', action: () => console.log('Delete document', itemKey) },
-      { key: 'edit', label: 'Edit', action: () => console.log('Edit document', itemKey) }
+      { key: 'preview', label: 'Preview', action: () => onPreview?.(itemKey) },
+      { key: 'download', label: 'Download', action: () => onDownload?.(itemKey) },
+      { key: 'delete', label: 'Delete', action: () => onDelete?.(itemKey) },
     ];
 
     if (pageType === 'firm') {
       return [
-        { key: 'lock', label: 'Lock', action: () => console.log('Lock document', itemKey) },
-        { key: 'moveToClient', label: 'Move to Client Side', action: () => console.log('Move to Client Side', itemKey) },
+        { key: 'lock', label: 'Lock/Unlock', action: () => onToggleLock?.(itemKey) },
+        { key: 'moveToClient', label: 'Move to Client Side', action: () => onMoveToClient?.(itemKey) },
         ...baseItems
       ];
     } else {
       return [
-        { key: 'moveToFirm', label: 'Move to Firm Side', action: () => console.log('Move to Firm Side', itemKey) },
+        { key: 'moveToFirm', label: 'Move to Firm Side', action: () => onMoveToFirm?.(itemKey) },
         ...baseItems
       ];
     }
