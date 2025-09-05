@@ -1,6 +1,6 @@
 {
     "id": "${{AAD_APP_OBJECT_ID}}",
-    "appId": "${{AAD_APP_CLIENT_ID}}",
+    "appId": "17479755-e076-41c8-8cfb-08518cbcd835",
     "displayName": "file-sharing-aad",
     "identifierUris": [
         "api://${{TAB_DOMAIN}}/${{AAD_APP_CLIENT_ID}}"

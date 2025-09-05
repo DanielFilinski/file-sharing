@@ -4,12 +4,14 @@ import { authService } from './auth';
 import { errorHandler } from './errorHandler';
 import { notificationService } from './notifications';
 import NotificationContainer from '../ui/NotificationContainer';
+import { LoginScreen } from '../../components/LoginScreen';
 
 interface AppContextType {
   isInitialized: boolean;
   isAuthenticated: boolean;
   currentUser: any;
   initialize: () => Promise<void>;
+  handleLogin: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -17,6 +19,7 @@ const AppContext = createContext<AppContextType>({
   isAuthenticated: false,
   currentUser: null,
   initialize: async () => {},
+  handleLogin: async () => {},
 });
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -41,32 +44,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           'Добро пожаловать',
           `Вы вошли как ${user.displayName}`
         );
-      } else {
-        // Пытаемся залогиниться и повторно получить пользователя
-        try {
-          await authService.login();
-          const afterLoginUser = await authService.getUserInfo();
-          if (afterLoginUser) {
-            setCurrentUser(afterLoginUser);
-            setIsAuthenticated(true);
-            notificationService.success(
-              'Добро пожаловать',
-              `Вы вошли как ${afterLoginUser.displayName}`
-            );
-          }
-        } catch (loginError) {
-          notificationService.error('Требуется вход', 'Войдите, чтобы продолжить работу');
-        }
       }
 
       setIsInitialized(true);
     } catch (error) {
       console.error('Failed to initialize app:', error);
-      notificationService.error(
-        'Ошибка инициализации',
-        'Не удалось инициализировать приложение'
-      );
       setIsInitialized(true); // Все равно помечаем как инициализированное
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      await authService.login();
+      const user = await authService.getUserInfo();
+      if (user) {
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        notificationService.success(
+          'Добро пожаловать',
+          `Вы вошли как ${user.displayName}`
+        );
+      } else {
+        // Если getUserInfo не вернул пользователя, но login прошел успешно
+        // (например, для браузерной аутентификации)
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+          setCurrentUser(currentUser);
+          setIsAuthenticated(true);
+          notificationService.success(
+            'Добро пожаловать',
+            `Вы вошли как ${currentUser.displayName}`
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      notificationService.error('Ошибка входа', 'Не удалось войти в систему');
     }
   };
 
@@ -79,7 +92,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     isAuthenticated,
     currentUser,
     initialize,
+    handleLogin,
   };
+
+  // Показываем экран входа если не аутентифицированы
+  if (isInitialized && !isAuthenticated) {
+    return (
+      <AppContext.Provider value={contextValue}>
+        <TeamsProvider>
+          <LoginScreen />
+          <NotificationContainer />
+        </TeamsProvider>
+      </AppContext.Provider>
+    );
+  }
 
   return (
     <AppContext.Provider value={contextValue}>
